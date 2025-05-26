@@ -28,9 +28,11 @@ const fields = ["number", "instructor", "enrollment", "crosslisted", "numTA", "d
 let currentCourse = 0;
 //HTML nodes
 const unit_select = document.getElementById("unit-name");
+const course_number = document.getElementById("course-num");
 const back_button = document.getElementById("back");
 const add_button = document.getElementById("add-course");
 const next_button = document.getElementById("next");
+const instructor = document.getElementById("instructor");
 
 class CourseOffering {
     constructor(number, instructor, enrollment, crosslisted, numTA, day, time, other_time, other_time_days,
@@ -162,11 +164,12 @@ function generateEventListeners(){
     const title = document.getElementById("title-wrapper");
     const num_radio = document.getElementById("number-select");
     const search = document.getElementById("course-search");
+    const special = document.getElementById("special-topics-fields");
     search.style.display = "none";
+    special.style.display = "none";
     num_radio.checked = true;
     other_time_days.style.display = "none";
     other_time_hours.style.display = "none";
-    title.style.display = "none";
     document.querySelector("label[for='other-time-days']").style.display = "none";
     document.querySelector("label[for='other-time-hours']").style.display = "none";
     other_time.addEventListener("change", function() {
@@ -210,6 +213,9 @@ function generateEventListeners(){
 
     const confirm_button = document.getElementById("confirm-selection");
     confirm_button.addEventListener("click", handleSelectionConfirmation);
+
+    const test_button = document.getElementById("test-button");
+    test_button.addEventListener("click", handleTestButton);
 }
 
 //END EVENT LISTENERS
@@ -360,6 +366,18 @@ function handleSubmit(event){
         location.href = './summary.html';
     }
     
+}
+
+function handleTestButton(event){
+    event.preventDefault();
+    course_number.value = "120";
+    instructor.value = "Zoe";
+    handleAddCourse(event);
+    course_number.value = "62";
+    document.getElementById("day").value = "tuesthur";
+    document.getElementById("time").value = "8";
+    instructor.value = "Avi";
+    handleSubmit(event);
 }
 
 function handleAddPreference(event){
