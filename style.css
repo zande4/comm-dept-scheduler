@@ -1,0 +1,47 @@
+body{
+    font-family: "franklin-gothic-urw";
+}
+
+select{
+    display: block;
+}
+
+table{
+    border: 1px solid;
+}
+
+td{
+    padding: 7px;
+}
+
+#schedule{
+    height: 600px;
+}
+
+#search-output-wrapper{
+    min-height: 30px;
+    max-height: 300px;
+    overflow-y: scroll;
+    width: max-content;
+}
+
+.inline-label{
+    display: inline-block;
+}
+
+.grayed-out{
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.selected{
+    background-color: #5288d8;
+}
+
+.satisfied{
+    background-color: #61d979;
+}
+
+.tbd {
+    background-color: orange;
+}

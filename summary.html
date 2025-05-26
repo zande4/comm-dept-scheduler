@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Summary</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@event-calendar/build@4.3.0/dist/event-calendar.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/@event-calendar/build@3.12.0/event-calendar.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.0/papaparse.min.js"></script>
+    <script src="courses.js" defer></script>
+    <script src="summaryScripts.js" defer></script>
+</head>
+<body>
+    <h1>COMM Department Course Offering Scheduler</h1>
+    <h2>Summary</h2>
+    <button>Download summary</button>
+    <button>Export course data</button>
+    <h3 id="unit-title"></h3>
+    <section>
+        <div id="checklist">
+            <details>
+                <summary>First-year Seminar Courses <span id="fys-count">0</span>/1</summary>
+                <p id="fys-count-courses"></p>
+            </details>
+            <details>
+                <summary>Communication Beyond Carolina <span id="commbeyond-count">0</span>/5</summary>
+                <p id="commbeyond-count-courses"></p>
+            </details>
+            <details>
+                <summary>Starter Courses <span id="starter-count">0</span>/2</summary>
+                <p id="starter-count-courses"></p>
+            </details>
+            <details>
+                <summary>Total Seats <span id="seat-count">0</span>/100</summary>
+                <p></p>
+            </details>
+            <details>
+                <summary>Modes of Inquiry <span id="moi-count">0</span>/1</summary>
+                <p id="moi-count-courses"></p>
+            </details>
+            <details>
+                <summary>Representation, Identity, and Difference <span id="rid-count">0</span>/1</summary>
+                <p id="rid-count-courses"></p>
+            </details>
+            <details>
+                <summary>Lower Level Courses <span id="low-count">0</span>/2</summary>
+                <p id="low-count-courses"></p>
+            </details>
+            <details>
+                <summary>Upper Level Courses <span id="upper-count">0</span>/4</summary>
+                <p id="upper-count-courses"></p>
+            </details>
+            <details>
+                <summary>Communication and Everyday Life <span id="cel-count">0</span>/1</summary>
+                <p id="cel-count-courses"></p>
+            </details>
+            <details>
+                <summary>Media Arts, Performance, and Critical Practice <span id="mapc-count">0</span>/1</summary>
+                <p id="mapc-count-courses"></p>
+            </details>
+            <details>
+                <summary>Media Technologies and Public Culture <span id="mtpc-count">0</span>/1</summary>
+                <p id="mtpc-count-courses"></p>
+            </details>
+            <details>
+                <summary>Organization, Communication, and Work <span id="ocw-count">0</span>/1</summary>
+                <p id="ocw-count-courses"></p>
+            </details>
+            <details>
+                <summary>Rhetoric, Activism, and Advocacy <span id="raa-count">0</span>/1</summary>
+                <p id="raa-count-courses"></p>
+            </details>
+            <details>
+                <summary>COMM Experience <span id="commexp-count">0</span>/1</summary>
+                <p id="commexp-count-courses"></p>
+            </details>
+        </div>
+    </section>
+    <section>
+        <h2>Faculty</h2>
+        <table id="faculty-table">
+        </table>
+    </section>
+    <section>
+        <div id="schedule">
+
+        </div>
+    </section>
+</body>
+</html>
