@@ -161,7 +161,6 @@ function generateEventListeners(){
     const other_time = document.getElementById("other-time");
     const other_time_days = document.getElementById("other-time-days");
     const other_time_hours = document.getElementById("other-time-hours");
-    const title = document.getElementById("title-wrapper");
     const num_radio = document.getElementById("number-select");
     const search = document.getElementById("course-search");
     const special = document.getElementById("special-topics-fields");
@@ -196,6 +195,11 @@ function generateEventListeners(){
     submit.addEventListener("click", handleSubmit);
 
     form.addEventListener("change", handleCourseSelectToggle);
+
+    course_number.addEventListener("change", handleCourseNumChange);
+    course_number.addEventListener("input", () => {
+        course_number.setCustomValidity('');
+    });
 
     const pref_button = document.getElementById("add-pref-button");
     pref_button.addEventListener("click", handleAddPreference);
@@ -248,12 +252,18 @@ function sortAndFilter(event){
     const filter_rid = document.getElementById("rid-filter").checked;
     const filter_commexp = document.getElementById("commexp-filter").checked;
     const filter_starter = document.getElementById("starter-filter").checked;
+    const filter_cel = document.getElementById("cel-filter").checked;
+    const filter_mapc = document.getElementById("mapc-filter").checked;
+    const filter_mtpc = document.getElementById("mtpc-filter").checked;
+    const filter_ocw = document.getElementById("ocw-filter").checked;
+    const filter_raa = document.getElementById("raa-filter").checked;
     const sort = document.getElementById("sort").value;
 
     //filter for courses that meet the parameters (AND search)
     let output = [];
     courseArray.forEach(course => {
-        let desired = (filter_moi && course.m) || (filter_rid && course.r) || (filter_commexp && course.h) || (filter_starter && course.starter);
+        let desired = (filter_moi && course.m) || (filter_rid && course.r) || (filter_commexp && course.h) || (filter_starter && course.starter)
+        || (filter_cel && course.cel) || (filter_mapc && course.mapc) || (filter_mtpc && course.mtpc) || (filter_ocw && course.ocw) || (filter_raa && course.raa);
         if (desired){
             output.push(course);
         }
@@ -350,6 +360,22 @@ function handleCourseSelectToggle(event){
                 break;
         }
     }
+}
+
+function handleCourseNumChange(){
+    //reject invalid course numbers
+    course_number.setCustomValidity("");
+    let valid = false;
+    courseArray.forEach(course =>{
+        if(course_number.value === course.number){
+            valid = true;
+        }
+    });
+    if (!valid){
+        course_number.setCustomValidity("Not a valid course number");
+    }
+    course_number.reportValidity();
+    
 }
 
 function handleSubmit(event){

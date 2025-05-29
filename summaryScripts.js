@@ -34,18 +34,26 @@ class Course{
 
 function showOutput(){
     restoreData();
+    createEventListeners();
     getCourseObjects();
     generateChecklist();
     generateFacultyList();
     courseOfferings.forEach(course => {
         parseCoursesToEvents(course);
     });
-    test();
+    initializeSchedule();
 }
 
 function restoreData(){
     unit = localStorage.getItem('unit');
     courseOfferings = JSON.parse(localStorage.getItem('courses'));
+}
+
+function createEventListeners(){
+    const radios = document.querySelectorAll("input[type='radio'");
+    radios.forEach(radio =>{
+        radio.addEventListener("change", handleFilterSelect);
+    })
 }
 
 function getCourseObjects(){
@@ -83,7 +91,7 @@ function generateChecklist(){
 
 
     //check each course offering to see if criteria are met
-    enterInTable(starter_count, getSatisfyingCourses("starter"), 1);
+    enterInTable(starter_count, getSatisfyingCourses("starter"), 2);
     let num_seats = 0;
     courseOfferings.forEach(course => {
         if (course.enrollment){
@@ -197,7 +205,7 @@ function generateFacultyList(){
 function parseCoursesToEvents(course){
     //adds an object(s) of the format {title: "", start: "", end: ""} for a given course offering to a global event array
     let rv = {title: "", start: "", end: ""};
-    rv.title = "COMM " + course.number;
+    rv.title = "COMM " + course.number + " " + course.instructor;
     let daysofweek = [];
     switch (course.day){
         case "monwedfri":
@@ -305,22 +313,23 @@ function parseCoursesToEvents(course){
     });
 }
 
-function test(){
+function initializeSchedule(){
     const schedule = document.getElementById("schedule");
     const calendar = new EventCalendar(schedule, {
-    plugins: [ EventCalendar.TimeGrid ],
+    plugins: [ EventCalendar.TimeGrid, EventCalendar.Interaction ],
     view: 'timeGridWeek',
+    //eventStartEditable: false,
+    //eventDurationEditable: false,
     headerToolbar: {start: "", center: "", end:""},
     dayHeaderFormat: { weekday: 'short' },
     date: "2025-08-03",
     slotMinTime: '07:00:00',
     slotMaxTime: '19:00:00',
-    /*events: [{title:"COMM100", start:"2025-08-03 10:00", end:"2025-8-03 11:00"}, 
-            {title:"COMM120", start:"2025-05-23 10:00", end:"2025-5-23 11:00"},
-            {title:"COMM100", start:"2025-05-23 10:00", end:"2025-5-23 11:00"},
-            {title:"COMM100", start:"2025-05-23 17:00", end:"2025-5-23 19:00"}],*/
-    events: events,
-    allDaySlot: false
+    slotEventOverlap: false,
+    events: events
     });
-    console.log(events);
+}
+
+function handleFilterSelect(){
+
 }

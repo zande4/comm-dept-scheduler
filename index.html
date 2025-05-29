@@ -31,25 +31,48 @@
         <label for="search-select">Search course by requirements</label>
 
         <div id="course-search">
-            <div class = "filter">                    
-                <div class="inline-label">
-                    <input type="checkbox" id="moi-filter"></input>
-                    <label for="moi-filter">Modes of Inquiry</label>
+            <div class = "filter">   
+                <div>
+                    <div class="inline-label">
+                        <input type="checkbox" id="moi-filter"></input>
+                        <label for="moi-filter">Modes of Inquiry</label>
+                    </div>
+                    <div class="inline-label">
+                        <input type="checkbox" id="rid-filter"></input>
+                        <label for="rid-filter">Representation Identity and Difference</label>
+                    </div>
+                    <div class="inline-label">
+                        <input type="checkbox" id="commexp-filter"></input>
+                        <label for="commexp-filter">COMM Experience</label>
+                    </div>
+                    <div class="inline-label">
+                        <input type="checkbox" id="starter-filter"></input>
+                        <label for="starter-filter">Starter Courses</label>
+                    </div>
                 </div>
-
-                <div class="inline-label">
-                    <input type="checkbox" id="rid-filter"></input>
-                    <label for="rid-filter">Representation Identity and Difference</label>
-                </div>
-
-                <div class="inline-label">
-                    <input type="checkbox" id="commexp-filter"></input>
-                    <label for="commexp-filter">COMM Experience</label>
-                </div>
-                <div class="inline-label">
-                    <input type="checkbox" id="starter-filter"></input>
-                    <label for="starter-filter">Starter Courses</label>
-                </div>
+                <div>
+                    <div class="inline-label">
+                        <input type="checkbox" id="cel-filter"></input>
+                        <label for="cel-filter">Communication and Everyday Life</label>
+                    </div>
+                    <div class="inline-label">
+                        <input type="checkbox" id="mapc-filter"></input>
+                        <label for="mapc-filter">Media Arts, Performance, and Critical Practice</label>
+                    </div>
+                    <div class="inline-label">
+                        <input type="checkbox" id="mtpc-filter"></input>
+                        <label for="mtpc-filter">Media Technologies and Public Culture</label>
+                    </div>
+                    <div class="inline-label">
+                        <input type="checkbox" id="ocw-filter"></input>
+                        <label for="ocw-filter">Organization, Communication, and Work</label>
+                    </div>
+                    <div class="inline-label">
+                        <input type="checkbox" id="raa-filter"></input>
+                        <label for="raa-filter">Rhetoric, Activism, and Advocacy</label>
+                    </div>
+                </div>                 
+                
                 <div>
                     <select id="sort" name="sort">
                         <option value="ascend">Ascending</option>
@@ -70,6 +93,9 @@
         <div id="course-num-wrapper">
             <label for="course-num">Course number:</label>
             <input type="number" name="number" id="course-num" required>
+        </div>
+        <div>
+            <p>Requirements satisfied:</p>
         </div>
         <div id="special-topics-fields">
             <div id="title-wrapper">
