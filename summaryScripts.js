@@ -1,6 +1,7 @@
 let courseOfferings = [];
 let courseObjects = [];
-let faculty;
+let sortedCourses = new Map();
+let faculty = new Map();
 let calendar;
 let events = [];
 let resources = [];
@@ -9,6 +10,12 @@ let pathways = {cel: "Communication and Everyday Life", mapc: "Media Arts, Perfo
 const WEEK = "2025-08-0";
 const DAYS = {sun: "3", mon: "4", tue: "5", wed: "6", thur: "7", fri: "8", sat: "9"};
 const dropdown = document.getElementById("filter-select");
+const checklist_section = document.getElementById("checklists");
+const requirements = new Map([["FY_SEMINAR", ["First-year Seminar Courses", 1]], ["COMMBEYOND", ["Communication Beyond Carolina", 5]],
+    ["starter",["Starter Courses", 2]], ["m", ["Modes of Inquiry", 1]], ["r", ["Representation, Identity, and Difference", 1]],
+    ["lower", ["Lower Level Courses", 2]], ["upper", ["Upper Level Courses", 4]], ["cel", ["Communication and Everyday Life", 1]],
+    ["mapc", ["Media Arts, Performance, and Critical Practice", 1]], ["mtpc", ["Media Technologies and Public Culture", 1]],
+    ["ocw", ["Organization, Communication, and Work", 1]], ["raa", ["Rhetoric, Activism, and Advocacy", 1]], ["h", ["COMM Experience", 1]]]);
 
 document.addEventListener('DOMContentLoaded', () => {
     parseCSV(() => {
@@ -77,13 +84,24 @@ function getCourseObjects(){
 }
 
 function generateChecklist(){
-    document.getElementById("unit-title").innerText = unit;
-    let sortedCourses = new Map();
     courseOfferings.forEach(course => {
-        
+        if(sortedCourses.has(course.unit)){
+            sortedCourses.get(course.unit).push(course);
+        }
+        else{
+            sortedCourses.set(course.unit, [course]);
+        }
     });
 
+    console.log("I am running");
+    console.log(sortedCourses.keys());
+    for (const unit of sortedCourses.keys()){
+        generateUnitChecklist(unit);
+        console.log("generated for " + unit);
+    }
+
     //get all counter spans
+    /*
     const fys_count = document.getElementById("fys-count");
     const commbeyond_count = document.getElementById("commbeyond-count");
     const starter_count = document.getElementById("starter-count");
@@ -158,21 +176,72 @@ function generateChecklist(){
             }
         });
         return courses;
-    }
+    }*/
 }
 
-function getSatisfyingCourses(criterion){
+function generateUnitChecklist(unit){
+    let heading = document.createElement("h3");
+    heading.innerText = unit;
+    let parent = document.createElement("div");
+    let seats = document.createElement("div");
+    let num_seats = 0;
+    sortedCourses.get(unit).forEach(course => {
+        if (course.enrollment){
+            num_seats += Number(course.enrollment);
+        }
+    });
+    seats.innerHTML = `&nbsp; &nbsp; Total Seats ` + num_seats + "/100";
+    if (num_seats > 100){
+        seats.classList.add("satisfied");
+    }
+    parent.appendChild(seats);
+    for (const field of requirements.keys()){
+        let details = document.createElement("details");
+        let summary = document.createElement("summary");
+        let courses = getSatisfyingCourses(field, unit);
+        let span = document.createElement("span");
+        span.innerText = courses.length;
+        let p = document.createElement("p");
+        courses.forEach(course => {
+            p.innerText += "COMM" + course.number + " ";
+        });
+        if (courses.length >= requirements.get(field)[1]){
+            summary.classList.add("satisfied");
+        }
+        summary.innerText = requirements.get(field)[0] + " ";
+        summary.appendChild(span);
+        summary.innerText += ("/" + requirements.get(field)[1]);
+        details.appendChild(summary);
+        details.appendChild(p);
+        parent.appendChild(details);
+    }
+    checklist_section.appendChild(heading);
+    checklist_section.appendChild(parent);
+}
+
+function getSatisfyingCourses(criterion, unit){
     let satisfying_courses = [];
+    let courses = sortedCourses.get(unit);
     if (criterion === "FY-SEMINAR" || criterion === "COMMBEYOND"){
-        courseObjects.forEach(course => {
-            if (course.ideas.includes(criterion)){
+        courses.forEach(course => {
+            if (courseNumberToObject(course.number).ideas.includes(criterion)){
+                satisfying_courses.push(course);
+            }
+        });
+    }
+    else if (criterion === "lower" || criterion === "upper"){
+        courses.forEach(course => {
+            if(criterion === "lower" && course.number < 400){
+                satisfying_courses.push(course);
+            }
+            else if (criterion === "upper" && course.number >= 400){
                 satisfying_courses.push(course);
             }
         });
     }
     else{
-        courseObjects.forEach(course => {
-            if (course[criterion] === true){
+        courses.forEach(course => {
+            if (courseNumberToObject(course.number)[criterion] === true){
                 satisfying_courses.push(course);
             }
         });

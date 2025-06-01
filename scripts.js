@@ -1,8 +1,5 @@
 /*TODO:
-    Get set up on Github
     Support special topics courses
-    show which courses apply to which requirements
-    allow special search
     data validate course numbers
     calendar color-coding
     allow alternate course times
@@ -451,15 +448,18 @@ function handleAddPreference(event){
 }
 
 function handleImport(event){
-    const file = event.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        try {
-        courseOfferings = JSON.parse(e.target.result);
-        } catch (err) {
-        console.error("Invalid JSON file:", err);
-        }
-    };
-    reader.readAsText(file);
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    for(const file of files){
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                courseOfferings.push(...JSON.parse(e.target.result));
+            } catch (err) {
+                console.error("Invalid JSON file:", err);
+            }
+        };
+        reader.readAsText(file);
+    }
 }
