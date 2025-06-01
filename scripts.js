@@ -35,8 +35,9 @@ const next_button = document.getElementById("next");
 const instructor = document.getElementById("instructor");
 
 class CourseOffering {
-    constructor(number, instructor, enrollment, crosslisted, numTA, day, time, other_time, other_time_days,
+    constructor(unit, number, instructor, enrollment, crosslisted, numTA, day, time, other_time, other_time_days,
         other_time_hours, service_rec, year_res, major_res, classroom){
+        this.unit = unit;
         this.number = number;
         this.instructor = instructor;
         this.enrollment = enrollment;
@@ -220,6 +221,8 @@ function generateEventListeners(){
 
     const test_button = document.getElementById("test-button");
     test_button.addEventListener("click", handleTestButton);
+
+    document.getElementById("import").addEventListener("change", handleImport);
 }
 
 //END EVENT LISTENERS
@@ -293,9 +296,13 @@ function sortAndFilter(event){
 
 function createCourseOffering(index){
     let entry = formData[index];
-    return new CourseOffering(entry.get("number"), entry.get("instructor"), entry.get("enrollment"), entry.get("crosslisted"),
+    return new CourseOffering(unit, entry.get("number"), entry.get("instructor"), entry.get("enrollment"), entry.get("crosslisted"),
      entry.get("numTA"), entry.get("day"), entry.get("time"), entry.get("other-time"), entry.get("other-time-days"),
      entry.get("other-time-hours"), entry.get("service-rec"), entry.get("year-res"), entry.get("major-res"), entry.get("classroom"));
+}
+
+function courseNumberToObject(number){
+    return courseArray.find(course => course.number === number);
 }
 
 function handleNext(event){
@@ -374,7 +381,41 @@ function handleCourseNumChange(){
     if (!valid){
         course_number.setCustomValidity("Not a valid course number");
     }
+    else{
+        //show requirements satisfied
+        const reqs_list = document.getElementById("requirements-list");
+        let reqs = [];
+        console.log(course_number.value);
+        const course_object = courseNumberToObject(course_number.value);
+        console.log(course_object);
+        if (course_object.cel){
+            reqs.push("Communication and Everyday Life");
+        }
+        if (course_object.mapc){
+            reqs.push("Media Arts, Performance, and Critical Practice");
+        }
+        if (course_object.mtpc){
+            reqs.push("Media Technologies and Public Culture");
+        }
+        if (course_object.ocw){
+            reqs.push("Organization, Communication, and Work");
+        }
+        if (course_object.raa){
+            reqs.push("Rhetoric, Activism, and Advocacy");
+        }
+        if (course_object.m){
+            reqs.push("Modes of Inquiry");
+        }
+        if (course_object.r){
+            reqs.push("Representation Identity and Difference");
+        }
+        reqs.forEach (req => {
+            reqs_list.innerHTML += req + ";&nbsp;";
+        });
+    }
     course_number.reportValidity();
+
+
     
 }
 
@@ -387,7 +428,6 @@ function handleSubmit(event){
             courseOfferings.push(createCourseOffering(i));
         }
         //Save to localStorage
-        localStorage.setItem('unit', unit);
         localStorage.setItem('courses', JSON.stringify(courseOfferings));
         location.href = './summary.html';
     }
@@ -408,4 +448,18 @@ function handleTestButton(event){
 
 function handleAddPreference(event){
     event.preventDefault();
+}
+
+function handleImport(event){
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+        courseOfferings = JSON.parse(e.target.result);
+        } catch (err) {
+        console.error("Invalid JSON file:", err);
+        }
+    };
+    reader.readAsText(file);
 }

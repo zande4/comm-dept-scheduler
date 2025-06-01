@@ -14,8 +14,8 @@
 <body>
     <h1>COMM Department Course Offering Scheduler</h1>
     <h2>Summary</h2>
-    <button>Download summary</button>
-    <button>Export course data</button>
+    <button title="Download a PDF version" id="summary">Download summary</button>
+    <button title="Export a JSON file to share your course data" id="export">Export course data</button>
     <h3 id="unit-title"></h3>
     <section>
         <div id="checklist">
@@ -77,30 +77,32 @@
         </div>
     </section>
     <section>
-        <h2>Faculty</h2>
-        <table id="faculty-table">
+        <details>
+            <summary class="faux-h2">Faculty</summary>
+            <table id="faculty-table">
         </table>
+        </details>
     </section>
     <section>
+        <h2>Schedule</h2>
         <div id="calendar-filters">
-            <input type="radio" name="cal-filter" value="cel" id="cel-filter">
-            <label for="cel-filter">Communication and Everyday Life</label>
-            <input type="radio" name="cal-filter" value="mapc" id="mapc-filter">
-            <label for="mapc-filter">Media Arts, Performance, and Critical Practice</label>
-            <input type="radio" name="cal-filter" value="mtpc" id="mtpc-filter">
-            <label for="mtpc-filter">Media Technologies and Public Culture</label>
-            <input type="radio" name="cal-filter" value="ocw" id="ocw-filter">
-            <label for="ocw-filter">Organization, Communication, and Work</label>
-            <input type="radio" name="cal-filter" value="raa" id="raa-filter">
-            <label for="raa-filter">Rhetoric, Activism, and Advocacy</label>
+            <input type="radio" name="cal-filter" value="pathway" id="pathway-filter">
+            <label for="pathway-filter">Filter by pathway</label>
+            <input type="radio" name="cal-filter" value="instructor" id="instructor-filter">
+            <label for="instructor-filter">Filter by instructor</label>
             <input type="radio" name="cal-filter" value="moi" id="moi-filter">
             <label for="moi-filter">Modes of Inquiry</label>
             <input type="radio" name="cal-filter" value="rid" id="rid-filter">
             <label for="rid-filter">Representation, Identity, and Difference</label>
+            <select id="filter-select">
+
+            </select>
         </div>
         <div id="schedule">
 
         </div>
     </section>
+    <iframe id="print-content" style="display: none">
+    </iframe>
 </body>
 </html>

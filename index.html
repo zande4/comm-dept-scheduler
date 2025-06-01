@@ -13,14 +13,17 @@
     <h1>COMM Department Course Offering Scheduler</h1>
     <h2>Submit Your Course Offerings</h2>
     <button id="test-button">Submit Test Data</button>
-    <label for="unit-name">Select your unit</label>
-    <select name="unit-name" id="unit-name">
-        <option value="Rhetoric">Rhetoric</option>
-        <option value="Interpersonal and Organizational Communication">Interpersonal and Organizational Communication</option>
-        <option value="Performance Studies">Performance Studies</option>
-        <option value="Media and Technology Studies">Media and Technology Studies</option>
-        <option value="Media Arts">Media Arts</option>
-    </select>
+    <input type="file" id="import" accept="application/json">
+    <div>
+        <label for="unit-name">Select your unit</label>
+        <select name="unit-name" id="unit-name">
+            <option value="Rhetoric">Rhetoric</option>
+            <option value="Interpersonal and Organizational Communication">Interpersonal and Organizational Communication</option>
+            <option value="Performance Studies">Performance Studies</option>
+            <option value="Media and Technology Studies">Media and Technology Studies</option>
+            <option value="Media Arts">Media Arts</option>
+        </select>
+    </div>
 
     <form id="form">
         <input type="radio" name="course-select" id="number-select" value="number">
@@ -95,7 +98,7 @@
             <input type="number" name="number" id="course-num" required>
         </div>
         <div>
-            <p>Requirements satisfied:</p>
+            <p id="requirements-list">Requirements satisfied:&nbsp;</p>
         </div>
         <div id="special-topics-fields">
             <div id="title-wrapper">

@@ -1,10 +1,14 @@
 let courseOfferings = [];
 let courseObjects = [];
-let faculty = {};
+let faculty;
+let calendar;
 let events = [];
+let resources = [];
+let pathways = {cel: "Communication and Everyday Life", mapc: "Media Arts, Performance, and Critical Practice",
+    mtpc: "Media Technologies and Public Culture", ocw: "Organization, Communication, and Work", raa: "Rhetoric, Activism, and Advocacy"};
 const WEEK = "2025-08-0";
 const DAYS = {sun: "3", mon: "4", tue: "5", wed: "6", thur: "7", fri: "8", sat: "9"};
-let unit = "";
+const dropdown = document.getElementById("filter-select");
 
 document.addEventListener('DOMContentLoaded', () => {
     parseCSV(() => {
@@ -34,10 +38,10 @@ class Course{
 
 function showOutput(){
     restoreData();
-    createEventListeners();
     getCourseObjects();
     generateChecklist();
     generateFacultyList();
+    createEventListeners();
     courseOfferings.forEach(course => {
         parseCoursesToEvents(course);
     });
@@ -45,7 +49,6 @@ function showOutput(){
 }
 
 function restoreData(){
-    unit = localStorage.getItem('unit');
     courseOfferings = JSON.parse(localStorage.getItem('courses'));
 }
 
@@ -54,6 +57,9 @@ function createEventListeners(){
     radios.forEach(radio =>{
         radio.addEventListener("change", handleFilterSelect);
     })
+    dropdown.addEventListener("change", handleDropdownSelect);
+    document.getElementById("summary").addEventListener("click", generateDocument);
+    document.getElementById("export").addEventListener("click", exportData);
 }
 
 function getCourseObjects(){
@@ -72,6 +78,10 @@ function getCourseObjects(){
 
 function generateChecklist(){
     document.getElementById("unit-title").innerText = unit;
+    let sortedCourses = new Map();
+    courseOfferings.forEach(course => {
+        
+    });
 
     //get all counter spans
     const fys_count = document.getElementById("fys-count");
@@ -172,7 +182,7 @@ function getSatisfyingCourses(criterion){
 
 function generateFacultyList(){
     //populate a table with faculty name in the first column and course numbers in following columns
-    let faculty = new Map();
+    faculty = new Map();
     courseOfferings.forEach(course => {
         let prof = course.instructor.toLowerCase().trim();
         prof = prof.charAt(0).toUpperCase() + prof.slice(1);
@@ -204,8 +214,14 @@ function generateFacultyList(){
 
 function parseCoursesToEvents(course){
     //adds an object(s) of the format {title: "", start: "", end: ""} for a given course offering to a global event array
-    let rv = {title: "", start: "", end: ""};
+    let rv = {title: "", start: "", end: "", resourceIds: [course.instructor]};
+    resources.push({id: course.instructor});
+    let reqs = getCourseReqs(courseNumberToObject(course.number));
+    reqs.forEach(req  => {
+        rv.resourceIds.push(req);
+    });
     rv.title = "COMM " + course.number + " " + course.instructor;
+    
     let daysofweek = [];
     switch (course.day){
         case "monwedfri":
@@ -313,11 +329,42 @@ function parseCoursesToEvents(course){
     });
 }
 
+function courseNumberToObject(number){
+    return courseArray.find(course => course.number === number);
+}
+
+function getCourseReqs(course){
+    let rv = [];
+    if (course.cel){
+        rv.push("cel");
+    }
+    if (course.mapc){
+        rv.push("mapc");
+    }
+    if (course.mtpc){
+        rv.push("mtpc");
+    }
+    if (course.ocw){
+        rv.push("ocw");
+    }
+    if (course.raa){
+        rv.push("raa");
+    }
+    if (course.m){
+        rv.push("moi");
+    }
+    if (course.r){
+        rv.push("rid");
+    }
+    return rv;
+}
+
 function initializeSchedule(){
     const schedule = document.getElementById("schedule");
-    const calendar = new EventCalendar(schedule, {
+    calendar = new EventCalendar(schedule, {
     plugins: [ EventCalendar.TimeGrid, EventCalendar.Interaction ],
     view: 'timeGridWeek',
+    resources: resources,
     //eventStartEditable: false,
     //eventDurationEditable: false,
     headerToolbar: {start: "", center: "", end:""},
@@ -326,10 +373,88 @@ function initializeSchedule(){
     slotMinTime: '07:00:00',
     slotMaxTime: '19:00:00',
     slotEventOverlap: false,
+    allDaySlot: false,
     events: events
     });
 }
 
-function handleFilterSelect(){
+function handleFilterSelect(event){
+    const target = event.target;
+    if (target.name === 'cal-filter' && target.type === 'radio') {
+        dropdown.replaceChildren();
+        switch (target.value){
+            case "pathway":
+                for (const path in pathways){
+                    const opt = document.createElement("option");
+                    opt.value = path;
+                    opt.innerText = pathways[path];
+                    dropdown.appendChild(opt);
+                }
+                break;
+            case "instructor":
+                for (const prof of faculty.keys()){
+                    const opt = document.createElement("option");
+                    opt.value = prof;
+                    opt.innerText = prof;
+                    dropdown.appendChild(opt);
+                }
+                break;
+            case "moi":
+                handleDropdownSelect("moi");
+                break;
+            case "rid":
+                handleDropdownSelect("rid");
+                break;
+        }
+    }
+}
 
+function handleDropdownSelect(resource){
+    let resourceId;
+    if (typeof(resource) === "string"){
+        resourceId = resource;
+    }
+    else {
+        resourceId = dropdown.value;
+    }
+    let filteredEvents = [];
+    events.forEach(event => {
+        if (event.resourceIds.includes(resourceId)){
+            filteredEvents.push(event);
+        }
+    });
+    console.log(filteredEvents);
+    calendar.setOption('events', filteredEvents);
+}
+
+function generateDocument(){
+    let header = document.createElement("p");
+    let iframe = document.getElementById("print-content");
+    test.innerText = "test";
+    const doc = iframe.contentWindow.document;
+    doc.open();
+    doc.write(`<!DOCTYPE html>
+        <html>
+        <head>
+            <title>Summary Download</title>
+        </head>
+        <body>
+            <h1>Course Offering Submission</h1>
+        </body>
+        </html>`);
+    doc.close();
+    
+        doc.body.appendChild(test);
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+
+}
+
+function exportData(){
+    const blob = new Blob([JSON.stringify(courseOfferings)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "course-offering-export.json";
+    a.click();
 }
