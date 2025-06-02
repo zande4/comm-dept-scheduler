@@ -12,8 +12,10 @@
 <body>
     <h1>COMM Department Course Offering Scheduler</h1>
     <h2>Submit Your Course Offerings</h2>
-    <button id="test-button">Submit Test Data</button>
-    <input type="file" id="import" accept="application/json" multiple>
+    <button id="test-button">Submit Test Data</button><br>
+    <input type="file" id="import" accept="application/json" multiple><br>
+    <span>*If you have previously saved data please upload here</span><br>
+
     <div>
         <label for="unit-name">Select your unit</label>
         <select name="unit-name" id="unit-name">
@@ -131,6 +133,7 @@
                 <input type="checkbox" name="raa" id="raa-checkbox">
             </div>
         </div>
+
         <div>
             <label for="instructor">Instructor:</label>
             <input type="text" id="instructor" name="instructor">
@@ -144,7 +147,7 @@
             <input type="text" id="crosslisted" name="crosslisted">
         </div>
         <div>
-            <label for="numTA">Number of Teaching Assistants or Instructional Assistants requested:</label>
+            <label for="numTA">Number of teaching assistants or instructional assistants requested:</label>
             <input type="number" id="numTA" name="numTA">
         </div>
         
@@ -203,7 +206,8 @@
 
         <button id="back">Back</button>
         <button id="next">Next</button>
-        <button id="add-course">Add another course</button>
+        <span id="page-num">1</span><span id="page-total">/1</span>
+        <button id="add-course">Add another course</button><br>
         <input id= "submit" type="submit" value="Submit">
     </form>
 </body>

@@ -5,7 +5,13 @@ let faculty = new Map();
 let calendar;
 let events = [];
 let resources = [];
-let pathways = {cel: "Communication and Everyday Life", mapc: "Media Arts, Performance, and Critical Practice",
+const dayStr = new Map([["monwedfri", "Mon/Wed/Fri"], ["monwed", "Mon/Wed"], ["tuesthur", "Tues/Thur"]]);
+const timeStr = new Map([["1", "8:00am - 8:50am"], ["2", "8:00am - 9:15am"], ["3", "9:05am - 9:55am"], ["4", "9:05am - 10:20am"], ["5", "9:30am - 10:45am"], ["6", "10:10am - 11:00am"],
+["7", "10:10am - 11:25am"], ["8", "11:00am - 12:15pm"], ["9","11:15am - 12:05pm"],
+["10", "11:15am - 12:30pm"], ["11", "12:20pm - 1:10pm"], ["12", "12:20pm - 1:35pm"], ["13", "12:30pm - 1:45pm"],
+["14", "1:25pm - 2:15pm"], ["15", "1:25pm - 2:40pm"], ["16", "2:00pm - 3:15pm"], ["17", "3:30pm - 4:45pm"],
+["18", "5:00pm - 6:15pm"], ["19", "5:45pm - 6:35pm"], ["20", "5:45pm - 7:00pm"]]);
+const pathways = {cel: "Communication and Everyday Life", mapc: "Media Arts, Performance, and Critical Practice",
     mtpc: "Media Technologies and Public Culture", ocw: "Organization, Communication, and Work", raa: "Rhetoric, Activism, and Advocacy"};
 const WEEK = "2025-08-0";
 const DAYS = {sun: "3", mon: "4", tue: "5", wed: "6", thur: "7", fri: "8", sat: "9"};
@@ -48,6 +54,7 @@ function showOutput(){
     getCourseObjects();
     generateChecklist();
     generateFacultyList();
+    generateCourseList();
     createEventListeners();
     courseOfferings.forEach(course => {
         parseCoursesToEvents(course);
@@ -99,84 +106,6 @@ function generateChecklist(){
         generateUnitChecklist(unit);
         console.log("generated for " + unit);
     }
-
-    //get all counter spans
-    /*
-    const fys_count = document.getElementById("fys-count");
-    const commbeyond_count = document.getElementById("commbeyond-count");
-    const starter_count = document.getElementById("starter-count");
-    const seat_count = document.getElementById("seat-count");
-    const moi_count = document.getElementById("moi-count");
-    const rid_count = document.getElementById("rid-count");
-    const low_count = document.getElementById("low-count");
-    const upper_count = document.getElementById("upper-count");
-    const cel_count = document.getElementById("cel-count");
-    const mapc_count = document.getElementById("mapc-count");
-    const mtpc_count = document.getElementById("mtpc-count");
-    const ocw_count = document.getElementById("ocw-count");
-    const raa_count = document.getElementById("raa-count");
-    const commexp_count = document.getElementById("commexp-count");
-
-
-    //check each course offering to see if criteria are met
-    enterInTable(starter_count, getSatisfyingCourses("starter"), 2);
-    let num_seats = 0;
-    courseOfferings.forEach(course => {
-        if (course.enrollment){
-            num_seats += Number(course.enrollment);
-        }
-    });
-
-    //update list
-    enterInTable(fys_count, getSatisfyingCourses("FY_SEMINAR"), 1);
-    enterInTable(commbeyond_count, getSatisfyingCourses("COMMBEYOND"), 5);
-    enterInTable(seat_count, num_seats, 100);
-    enterInTable(moi_count, getSatisfyingCourses("m"), 1);
-    enterInTable(rid_count, getSatisfyingCourses("r"), 1);
-    enterInTable(low_count, getLowerUpper("lower"), 2);
-    enterInTable(upper_count, getLowerUpper("upper"), 4);
-    enterInTable(cel_count, getSatisfyingCourses("cel"), 1);
-    enterInTable(mapc_count, getSatisfyingCourses("mapc"), 1);
-    enterInTable(mtpc_count, getSatisfyingCourses("mtpc"), 1);
-    enterInTable(ocw_count, getSatisfyingCourses("own"), 1);
-    enterInTable(raa_count, getSatisfyingCourses("raa"), 1);
-    enterInTable(commexp_count, getSatisfyingCourses("h"), 1);
-
-    //helper functions
-    function enterInTable(span, courses, req){
-        let num = "";
-        if (!Array.isArray(courses)){
-            num = courses;
-        }
-        else{
-            num = courses.length;
-        }
-        span.innerText = num;
-        const details = document.getElementById(span.id + "-courses");
-        if (num >= req){
-            span.parentElement.classList.add("satisfied");
-        }
-        if (details){
-            let child = document.createElement("p")
-            courses.forEach(course => {
-                child.innerText += "COMM" + course.number + " ";
-            });
-            details.appendChild(child);
-        }
-    }
-
-    function getLowerUpper(range){
-        let courses = [];
-        courseObjects.forEach(course => {
-            if(range === "lower" && course.number < 400){
-                courses.push(course);
-            }
-            else if (range === "upper" && course.number >= 400){
-                courses.push(course);
-            }
-        });
-        return courses;
-    }*/
 }
 
 function generateUnitChecklist(unit){
@@ -279,6 +208,65 @@ function generateFacultyList(){
         });
         table.appendChild(row);
     });
+}
+
+function generateCourseList(){
+    const course_list = document.getElementById("courses");
+    for (const course of courseOfferings){
+        let container = document.createElement("div");
+        let title = document.createElement("b");
+        title.innerText = "COMM " + course.number + " - " + course.instructor
+
+        if(typeof(course.name) === 'string' && course.name.length != 0){
+            let name = document.createElement("li");
+            name.innerText = "Title: " + course.name;
+            text.appendChild(name);
+            let description = document.createElement("p");
+            description.innerText = "Description: " + course.description;
+            text.appendChild(description);
+        }
+
+        let text = document.createElement("ul");
+        let time = document.createElement("li");
+        time.innerText = dayStr.get(course.day) + " " + timeStr.get(course.time);
+        let enrollment = document.createElement("li");
+        enrollment.innerText = "Enrollment: " + course.enrollment;
+        let crosslisted = document.createElement("li");
+        crosslisted.innerText = "Crosslisted: " + course.crosslisted;
+        let TAs = document.createElement("li");
+        TAs.innerText = "TAs requested: " + course.numTA;
+        let service = document.createElement("li");
+        service.innerText = "Service component: " + boolToEng(course.service_rec);
+        let year = document.createElement("li");
+        year.innerText = "Year restriction: " + course.year_res;
+        let major = document.createElement("li");
+        major.innerText = "Major restriction: " + boolToEng(course.major_res);
+        let classroom = document.createElement("li");
+        classroom.innerText = "Classroom requirement: " + course.classroom;
+
+
+        text.appendChild(time);
+        text.appendChild(enrollment);
+        text.appendChild(crosslisted);
+        text.appendChild(TAs);
+        text.appendChild(service);
+        text.appendChild(year);
+        text.appendChild(major);
+        text.appendChild(classroom);
+        container.appendChild(title);
+        container.appendChild(text);
+
+        course_list.appendChild(container);
+
+        function boolToEng(bool){
+            if (bool){
+                return "Yes";
+            }
+            else{
+                return "No";
+            }
+        }
+    }
 }
 
 function parseCoursesToEvents(course){
@@ -432,11 +420,19 @@ function initializeSchedule(){
     const schedule = document.getElementById("schedule");
     calendar = new EventCalendar(schedule, {
     plugins: [ EventCalendar.TimeGrid, EventCalendar.Interaction ],
+    customButtons: {
+        edit: {
+            text: "Edit Schedule",
+            click: function() {
+                calendar.setOption("eventStartEditable", true);
+            }
+        }
+    },
     view: 'timeGridWeek',
     resources: resources,
-    //eventStartEditable: false,
-    //eventDurationEditable: false,
-    headerToolbar: {start: "", center: "", end:""},
+    eventStartEditable: false,
+    eventDurationEditable: false,
+    headerToolbar: {start: "", center: "", end:"edit"},
     dayHeaderFormat: { weekday: 'short' },
     date: "2025-08-03",
     slotMinTime: '07:00:00',

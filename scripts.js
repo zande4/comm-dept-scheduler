@@ -29,14 +29,18 @@ const course_number = document.getElementById("course-num");
 const back_button = document.getElementById("back");
 const add_button = document.getElementById("add-course");
 const next_button = document.getElementById("next");
+const page_number = document.getElementById("page-num");
+const page_total = document.getElementById("page-total");
 const instructor = document.getElementById("instructor");
 
 class CourseOffering {
-    constructor(unit, number, instructor, enrollment, crosslisted, numTA, day, time, other_time, other_time_days,
+    constructor(unit, number, instructor, name, description, enrollment, crosslisted, numTA, day, time, other_time, other_time_days,
         other_time_hours, service_rec, year_res, major_res, classroom){
         this.unit = unit;
         this.number = number;
         this.instructor = instructor;
+        this.name = name;
+        this.description = description;
         this.enrollment = enrollment;
         this.crosslisted = crosslisted;
         this.numTA = numTA;
@@ -229,6 +233,8 @@ function renderForm(){
     fields.forEach(name => {
         form[name].value = formData[currentCourse].get(name);
     });
+    page_number.innerText = currentCourse + 1;
+    page_total.innerText = "/" + formData.length;
 }
 
 function handleCourseSearchClick(event){
@@ -293,7 +299,7 @@ function sortAndFilter(event){
 
 function createCourseOffering(index){
     let entry = formData[index];
-    return new CourseOffering(unit, entry.get("number"), entry.get("instructor"), entry.get("enrollment"), entry.get("crosslisted"),
+    return new CourseOffering(unit, entry.get("number"), entry.get("instructor"), entry.get("title"), entry.get("description"), entry.get("enrollment"), entry.get("crosslisted"),
      entry.get("numTA"), entry.get("day"), entry.get("time"), entry.get("other-time"), entry.get("other-time-days"),
      entry.get("other-time-hours"), entry.get("service-rec"), entry.get("year-res"), entry.get("major-res"), entry.get("classroom"));
 }
@@ -337,6 +343,8 @@ function handleAddCourse(event){
         formData[currentCourse] = (new FormData(form));
         currentCourse++;
         form.reset();
+        page_number.innerText = currentCourse + 1;
+        page_total.innerText = "/" + (formData.length + 1);
     }
 }
 
@@ -377,6 +385,12 @@ function handleCourseNumChange(){
     });
     if (!valid){
         course_number.setCustomValidity("Not a valid course number");
+    }
+    else if (course_number.value === "390" || course_number.value === "490" || course_number.value === "690"){
+        //if special topics course
+        document.getElementById("title").required = true;
+        document.getElementById("description").required = true;
+        document.getElementById("special-topic").checked = true;
     }
     else{
         //show requirements satisfied
