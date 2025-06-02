@@ -183,7 +183,12 @@ function generateFacultyList(){
     faculty = new Map();
     courseOfferings.forEach(course => {
         let prof = course.instructor.toLowerCase().trim();
-        prof = prof.charAt(0).toUpperCase() + prof.slice(1);
+        if (prof === "tbd"){
+            prof = prof.toUpperCase();
+        }
+        else{
+            prof = prof.charAt(0).toUpperCase() + prof.slice(1);
+        }
         if(faculty.has(prof)){
             faculty.get(prof).push(course.number);
         }
@@ -216,6 +221,7 @@ function generateCourseList(){
         let container = document.createElement("div");
         let title = document.createElement("b");
         title.innerText = "COMM " + course.number + " - " + course.instructor
+        let text = document.createElement("ul");
 
         if(typeof(course.name) === 'string' && course.name.length != 0){
             let name = document.createElement("li");
@@ -226,7 +232,18 @@ function generateCourseList(){
             text.appendChild(description);
         }
 
-        let text = document.createElement("ul");
+        if(courseNumIsSpecialTopics(course.number)){
+            let pathwaysli = document.createElement("li");
+            pathwaysli.innerText = "Pathways: ";
+            const paths = Object.keys(pathways);
+            for (let i = 0; i < paths.length; i++){
+                if (course.pathways[i]){
+                    pathwaysli.innerText += pathways[paths[i]] + "; ";
+                }
+            }
+            text.appendChild(pathwaysli);
+        }
+
         let time = document.createElement("li");
         time.innerText = dayStr.get(course.day) + " " + timeStr.get(course.time);
         let enrollment = document.createElement("li");
@@ -267,6 +284,10 @@ function generateCourseList(){
             }
         }
     }
+}
+
+function courseNumIsSpecialTopics(number){
+    return(number === "89" || number === "390" || number === "490" || number === "690");
 }
 
 function parseCoursesToEvents(course){

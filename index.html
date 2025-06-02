@@ -28,187 +28,203 @@
     </div>
 
     <form id="form">
-        <input type="radio" name="course-select" id="number-select" value="number">
-        <label for="number-select">Enter course number</label>
-        <input type="radio" name="course-select" id="special-topic" value="special">
-        <label for="special-topic">Enter special topics course</label>
-        <input type="radio" name="course-select" id="search-select" value="search">
-        <label for="search-select">Search course by requirements</label>
+        <h3>Course Info</h3>
+        <div>
+            <input type="radio" name="course-select" id="number-select" value="number">
+            <label for="number-select">Enter course number</label>
+            <input type="radio" name="course-select" id="special-topic" value="special">
+            <label for="special-topic">Enter special topics course</label>
+            <input type="radio" name="course-select" id="search-select" value="search">
+            <label for="search-select">Search course by requirements</label>
 
-        <div id="course-search">
-            <div class = "filter">   
-                <div>
-                    <div class="inline-label">
-                        <input type="checkbox" id="moi-filter"></input>
-                        <label for="moi-filter">Modes of Inquiry</label>
+            <div id="course-search">
+                <div class = "filter">   
+                    <div>
+                        <div class="inline-label">
+                            <input type="checkbox" id="moi-filter"></input>
+                            <label for="moi-filter">Modes of Inquiry</label>
+                        </div>
+                        <div class="inline-label">
+                            <input type="checkbox" id="rid-filter"></input>
+                            <label for="rid-filter">Representation Identity and Difference</label>
+                        </div>
+                        <div class="inline-label">
+                            <input type="checkbox" id="commexp-filter"></input>
+                            <label for="commexp-filter">COMM Experience</label>
+                        </div>
+                        <div class="inline-label">
+                            <input type="checkbox" id="starter-filter"></input>
+                            <label for="starter-filter">Starter Courses</label>
+                        </div>
                     </div>
-                    <div class="inline-label">
-                        <input type="checkbox" id="rid-filter"></input>
-                        <label for="rid-filter">Representation Identity and Difference</label>
-                    </div>
-                    <div class="inline-label">
-                        <input type="checkbox" id="commexp-filter"></input>
-                        <label for="commexp-filter">COMM Experience</label>
-                    </div>
-                    <div class="inline-label">
-                        <input type="checkbox" id="starter-filter"></input>
-                        <label for="starter-filter">Starter Courses</label>
+                    <div>
+                        <div class="inline-label">
+                            <input type="checkbox" id="cel-filter"></input>
+                            <label for="cel-filter">Communication and Everyday Life</label>
+                        </div>
+                        <div class="inline-label">
+                            <input type="checkbox" id="mapc-filter"></input>
+                            <label for="mapc-filter">Media Arts, Performance, and Critical Practice</label>
+                        </div>
+                        <div class="inline-label">
+                            <input type="checkbox" id="mtpc-filter"></input>
+                            <label for="mtpc-filter">Media Technologies and Public Culture</label>
+                        </div>
+                        <div class="inline-label">
+                            <input type="checkbox" id="ocw-filter"></input>
+                            <label for="ocw-filter">Organization, Communication, and Work</label>
+                        </div>
+                        <div class="inline-label">
+                            <input type="checkbox" id="raa-filter"></input>
+                            <label for="raa-filter">Rhetoric, Activism, and Advocacy</label>
+                        </div>
+                    </div>                 
+                    
+                    <div>
+                        <select id="sort" name="sort">
+                            <option value="ascend">Ascending</option>
+                            <option value="descend">Descending</option>
+                        </select>
+
+                        <button id="submit-search">Sort and Filter</button>
+                        <button id="confirm-selection">Confirm Selection</button>
                     </div>
                 </div>
-                <div>
-                    <div class="inline-label">
-                        <input type="checkbox" id="cel-filter"></input>
-                        <label for="cel-filter">Communication and Everyday Life</label>
-                    </div>
-                    <div class="inline-label">
-                        <input type="checkbox" id="mapc-filter"></input>
-                        <label for="mapc-filter">Media Arts, Performance, and Critical Practice</label>
-                    </div>
-                    <div class="inline-label">
-                        <input type="checkbox" id="mtpc-filter"></input>
-                        <label for="mtpc-filter">Media Technologies and Public Culture</label>
-                    </div>
-                    <div class="inline-label">
-                        <input type="checkbox" id="ocw-filter"></input>
-                        <label for="ocw-filter">Organization, Communication, and Work</label>
-                    </div>
-                    <div class="inline-label">
-                        <input type="checkbox" id="raa-filter"></input>
-                        <label for="raa-filter">Rhetoric, Activism, and Advocacy</label>
-                    </div>
-                </div>                 
-                
-                <div>
-                    <select id="sort" name="sort">
-                        <option value="ascend">Ascending</option>
-                        <option value="descend">Descending</option>
-                    </select>
+                <div id="search-output-wrapper">
+                    <table id="search-output">
 
-                    <button id="submit-search">Sort and Filter</button>
-                    <button id="confirm-selection">Confirm Selection</button>
+                    </table>
                 </div>
             </div>
-            <div id="search-output-wrapper">
-                <table id="search-output">
 
-                </table>
+            <div id="course-num-wrapper">
+                <label for="course-num">Course number:</label>
+                <input type="number" name="number" id="course-num" required>
             </div>
-        </div>
+            <div>
+                <p id="requirements-list">Requirements satisfied:&nbsp;</p>
+            </div>
+            <div id="special-topics-fields">
+                <div id="title-wrapper">
+                    <label for="title">Title:</label>
+                    <input type="text" name="title" id="title">
+                </div>
+                <div>
+                    <label for="description">Description:</label>
+                    <input type="textarea" name="description" id="description">
+                </div>
+                <h4>Select what pathways the course is found in</h4>
+                <div>
+                    <label for="cel-checkbox">Communication and Everyday Life</label>
+                    <input type="checkbox" name="cel" id="cel-checkbox">
+                </div>
+                <div>
+                    <label for="mapc-checkbox">Media Arts, Performance, and Critical Practice</label>
+                    <input type="checkbox" name="mapc" id="mapc-checkbox">
+                </div>
+                <div>
+                    <label for="mtpc-checkbox">Media Technologies and Public Culture</label>
+                    <input type="checkbox" name="mtpc" id="mtpc-checkbox">
+                </div>
+                <div>
+                    <label for="ocw-checkbox">Organization, Communication, and Work</label>
+                    <input type="checkbox" name="ocw" id="ocw-checkbox">
+                </div>
+                <div>
+                    <label for="raa-checkbox">Rhetoric, Activism, and Advocacy</label>
+                    <input type="checkbox" name="raa" id="raa-checkbox">
+                </div>
+            </div>
 
-        <div id="course-num-wrapper">
-            <label for="course-num">Course number:</label>
-            <input type="number" name="number" id="course-num" required>
-        </div>
-        <div>
-            <p id="requirements-list">Requirements satisfied:&nbsp;</p>
-        </div>
-        <div id="special-topics-fields">
-            <div id="title-wrapper">
-                <label for="title">Title:</label>
-                <input type="text" name="title" id="title">
+            <div>
+                <label for="instructor">Instructor:</label>
+                <input type="text" id="instructor" name="instructor">
             </div>
             <div>
-                <label for="description">Description:</label>
-                <input type="textarea" name="description" id="description">
-            </div>
-            <h4>Select what pathways the course is found in</h4>
-            <div>
-                <label for="cel-checkbox">Communication and Everyday Life</label>
-                <input type="checkbox" name="cel" id="cel-checkbox">
+                <label for="enrollment">Max enrollment:</label>
+                <input type="number" id="enrollment" name="enrollment">
             </div>
             <div>
-                <label for="mapc-checkbox">Media Arts, Performance, and Critical Practice</label>
-                <input type="checkbox" name="mapc" id="mapc-checkbox">
+                <label for="crosslisted">Crosslisted department: </label>
+                <input type="text" id="crosslisted" name="crosslisted">
             </div>
             <div>
-                <label for="mtpc-checkbox">Media Technologies and Public Culture</label>
-                <input type="checkbox" name="mtpc" id="mtpc-checkbox">
+                <label for="numTA">Number of teaching assistants or instructional assistants requested:</label>
+                <input type="number" id="numTA" name="numTA">
             </div>
-            <div>
-                <label for="ocw-checkbox">Organization, Communication, and Work</label>
-                <input type="checkbox" name="ocw" id="ocw-checkbox">
-            </div>
-            <div>
-                <label for="raa-checkbox">Rhetoric, Activism, and Advocacy</label>
-                <input type="checkbox" name="raa" id="raa-checkbox">
-            </div>
-        </div>
-
-        <div>
-            <label for="instructor">Instructor:</label>
-            <input type="text" id="instructor" name="instructor">
-        </div>
-        <div>
-            <label for="enrollment">Max enrollment:</label>
-            <input type="number" id="enrollment" name="enrollment">
-        </div>
-        <div>
-            <label for="crosslisted">Crosslisted department: </label>
-            <input type="text" id="crosslisted" name="crosslisted">
-        </div>
-        <div>
-            <label for="numTA">Number of teaching assistants or instructional assistants requested:</label>
-            <input type="number" id="numTA" name="numTA">
         </div>
         
         <h3>Preferred Class Times</h3>
-        <label for="day">Days of week</label>
-        <select id="day" name="day">
-            <option value="monwedfri">Mon/Wed/Fri</option>
-            <option value="monwed">Mon/Wed</option>
-            <option value="tuesthur">Tues/Thur</option>
-        </select>
-        <label for="time"></label>
-        <select id="time" name="time">
-            <option value="1">8:00am - 8:50am</option>
-            <option value="2">8:00am - 9:15am</option>
-            <option value="3">9:05am - 9:55am</option>
-            <option value="4">9:05am - 10:20am</option>
-            <option value="5">9:30am - 10:45am</option>
-            <option value="6">10:10am - 11:00am</option>
-            <option value="7">10:10am - 11:25am</option>
-            <option value="8">11:00am - 12:15pm</option>
-            <option value="9">11:15am - 12:05pm</option>
-            <option value="10">11:15am - 12:30pm</option>
-            <option value="11">12:20pm - 1:10pm</option>
-            <option value="12">12:20pm - 1:35pm</option>
-            <option value="13">12:30pm - 1:45pm</option>
-            <option value="14">1:25pm - 2:15pm</option>
-            <option value="15">1:25pm - 2:40pm</option>
-            <option value="16">2:00pm - 3:15pm</option>
-            <option value="17">3:30pm - 4:45pm</option>
-            <option value="18">5:00pm - 6:15pm</option>
-            <option value="19">5:45pm - 6:35pm</option>
-            <option value="20">5:45pm - 7:00pm</option>
-        </select>
-        <label for="other-time">Other days/times</label>
-        <input type="checkbox" id="other-time">
-        <label for="other-time-days">Days:</label>
-        <input type="text" id="other-time-days">
-        <label for="other-time-hours">Hours:</label>
-        <input type="text" id="other-time-hours">
-        <button id="add-pref-button">Add another day/time</button>
+        <div>
+            <label for="day">Days of week</label>
+            <select id="day" name="day">
+                <option value="monwedfri">Mon/Wed/Fri</option>
+                <option value="monwed">Mon/Wed</option>
+                <option value="tuesthur">Tues/Thur</option>
+            </select>
+            <label for="time"></label>
+            <select id="time" name="time">
+                <option value="1">8:00am - 8:50am</option>
+                <option value="2" hidden>8:00am - 9:15am</option>
+                <option value="3">9:05am - 9:55am</option>
+                <option value="4" hidden>9:05am - 10:20am</option>
+                <option value="5" hidden>9:30am - 10:45am</option>
+                <option value="6">10:10am - 11:00am</option>
+                <option value="7" hidden>10:10am - 11:25am</option>
+                <option value="8" hidden>11:00am - 12:15pm</option>
+                <option value="9">11:15am - 12:05pm</option>
+                <option value="10" hidden>11:15am - 12:30pm</option>
+                <option value="11">12:20pm - 1:10pm</option>
+                <option value="12" hidden>12:20pm - 1:35pm</option>
+                <option value="13" hidden>12:30pm - 1:45pm</option>
+                <option value="14">1:25pm - 2:15pm</option>
+                <option value="15" hidden>1:25pm - 2:40pm</option>
+                <option value="16" hidden>2:00pm - 3:15pm</option>
+                <option value="17" hidden>3:30pm - 4:45pm</option>
+                <option value="18" hidden>5:00pm - 6:15pm</option>
+                <option value="19">5:45pm - 6:35pm</option>
+                <option value="20" hidden>5:45pm - 7:00pm</option>
+            </select>
+            <label for="other-time">Other days/times</label>
+            <input type="checkbox" id="other-time">
+            <label for="other-time-days">Days:</label>
+            <input type="text" id="other-time-days">
+            <label for="other-time-hours">Hours:</label>
+            <input type="text" id="other-time-hours">
+            <button id="add-pref-button">Add another day/time</button>
+        </div>
 
         <h3>Enrollment Restrictions</h3>
 
-        <label for="service-rec">30 hour service component?</label>
-        <input type="checkbox" name="service-rec" id="service-rec">
-        <label for="year-res">Year restriction:</label>
-        <input type="text" name="year-res" id="year-res">
-        <label for="major-res">Majors only?</label>
-        <input type="checkbox" name="major-res" id="major-res">
+        <div>
+            <div>
+                <label for="service-rec">30 hour service component?</label>
+                <input type="checkbox" name="service-rec" id="service-rec">
+            </div>
+            <div>
+                <label for="year-res">Year restriction:</label>
+                <input type="text" name="year-res" id="year-res">
+            </div>
+            <div>
+                <label for="major-res">Majors only?</label>
+                <input type="checkbox" name="major-res" id="major-res">
+            </div>
+        </div>
 
         <h3>Classroom Requirements</h3>
         <div>
             <label for="classroom">Preferred building and room number:</label>
             <input type="text" name="classroom" id="classroom">
         </div>
-
-        <button id="back">Back</button>
-        <button id="next">Next</button>
-        <span id="page-num">1</span><span id="page-total">/1</span>
-        <button id="add-course">Add another course</button><br>
-        <input id= "submit" type="submit" value="Submit">
+        <div class="form-nav">
+            <span>
+                <button id="back">Back</button>
+                <span><span id="page-num">1</span><span id="page-total">/1</span></span>
+                <button id="next">Next</button>
+            </span>
+            <button id="add-course">Add another course</button>
+            <input id= "submit" type="submit" value="Submit">
+        </div>
     </form>
 </body>
 </html>

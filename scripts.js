@@ -32,15 +32,17 @@ const next_button = document.getElementById("next");
 const page_number = document.getElementById("page-num");
 const page_total = document.getElementById("page-total");
 const instructor = document.getElementById("instructor");
+const reqs_list = document.getElementById("requirements-list");
 
 class CourseOffering {
-    constructor(unit, number, instructor, name, description, enrollment, crosslisted, numTA, day, time, other_time, other_time_days,
+    constructor(unit, number, instructor, name, description, pathways, enrollment, crosslisted, numTA, day, time, other_time, other_time_days,
         other_time_hours, service_rec, year_res, major_res, classroom){
         this.unit = unit;
         this.number = number;
         this.instructor = instructor;
         this.name = name;
         this.description = description;
+        this.pathways = pathways;
         this.enrollment = enrollment;
         this.crosslisted = crosslisted;
         this.numTA = numTA;
@@ -233,6 +235,22 @@ function renderForm(){
     fields.forEach(name => {
         form[name].value = formData[currentCourse].get(name);
     });
+    if (course_number.value === "89" || course_number.value === "390" || course_number.value === "490" || course_number.value === "690"){
+        document.getElementById("title").required = true;
+        document.getElementById("description").required = true;
+        const clickEvent = new MouseEvent('click');
+        document.getElementById("special-topic").dispatchEvent(clickEvent);
+        reqs_list.innerHTML = "";
+    }
+    else{
+        document.getElementById("title").required = false;
+        document.getElementById("description").required = false;
+        const reqs = getReqsListFromCourseNum(course_number.value);
+        reqs_list.innerText = "Requirements satisfied: ";
+        reqs.forEach (req => {
+            reqs_list.innerHTML += req + ";&nbsp;";
+        }); 
+    }
     page_number.innerText = currentCourse + 1;
     page_total.innerText = "/" + formData.length;
 }
@@ -299,7 +317,13 @@ function sortAndFilter(event){
 
 function createCourseOffering(index){
     let entry = formData[index];
-    return new CourseOffering(unit, entry.get("number"), entry.get("instructor"), entry.get("title"), entry.get("description"), entry.get("enrollment"), entry.get("crosslisted"),
+    let pathways = [];
+    let paths = ["cel", "mapc", "mtpc", "ocw", "raa"];
+    paths.forEach(path => {
+        pathways.push(entry.get(path));
+    })
+
+    return new CourseOffering(unit, entry.get("number"), entry.get("instructor"), entry.get("title"), entry.get("description"), pathways, entry.get("enrollment"), entry.get("crosslisted"),
      entry.get("numTA"), entry.get("day"), entry.get("time"), entry.get("other-time"), entry.get("other-time-days"),
      entry.get("other-time-hours"), entry.get("service-rec"), entry.get("year-res"), entry.get("major-res"), entry.get("classroom"));
 }
@@ -310,7 +334,7 @@ function courseNumberToObject(number){
 
 function handleNext(event){
     event.preventDefault();
-    if (form.reportValidity){
+    if (form.reportValidity()){
         formData[currentCourse] = (new FormData(form));
         currentCourse++;
         if(currentCourse == (formData.length - 1)){
@@ -324,7 +348,7 @@ function handleNext(event){
 
 function handleBack(event){
     event.preventDefault();
-    if (form.reportValidity){
+    if (form.reportValidity()){
         formData[currentCourse] = (new FormData(form));
         add_button.style.display = "none";
         next_button.style.removeProperty('display');
@@ -338,11 +362,12 @@ function handleBack(event){
 
 function handleAddCourse(event){
     event.preventDefault();
-    if (form.reportValidity){
+    if (form.reportValidity()){
         back_button.style.removeProperty("display");
         formData[currentCourse] = (new FormData(form));
         currentCourse++;
         form.reset();
+        reqs_list.innerText = "Requirements satisfied: ";
         page_number.innerText = currentCourse + 1;
         page_total.innerText = "/" + (formData.length + 1);
     }
@@ -386,40 +411,25 @@ function handleCourseNumChange(){
     if (!valid){
         course_number.setCustomValidity("Not a valid course number");
     }
-    else if (course_number.value === "390" || course_number.value === "490" || course_number.value === "690"){
+    else if (course_number.value === "89" || course_number.value === "390" || course_number.value === "490" || course_number.value === "690"){
         //if special topics course
         document.getElementById("title").required = true;
         document.getElementById("description").required = true;
-        document.getElementById("special-topic").checked = true;
+        //document.getElementById("special-topic").checked = true;
+        const clickEvent = new MouseEvent('click');
+        document.getElementById("special-topic").dispatchEvent(clickEvent);
+        reqs_list.innerHTML = "";
     }
     else{
         //show requirements satisfied
-        const reqs_list = document.getElementById("requirements-list");
-        let reqs = [];
-        console.log(course_number.value);
-        const course_object = courseNumberToObject(course_number.value);
-        console.log(course_object);
-        if (course_object.cel){
-            reqs.push("Communication and Everyday Life");
+        document.getElementById("title").required = false;
+        document.getElementById("description").required = false;
+        if (document.getElementById("special-topic").checked){
+            const clickEvent = new MouseEvent('click');
+            document.getElementById("number-select").dispatchEvent(clickEvent);
+            reqs_list.innerText = "Requirements satisfied: ";
         }
-        if (course_object.mapc){
-            reqs.push("Media Arts, Performance, and Critical Practice");
-        }
-        if (course_object.mtpc){
-            reqs.push("Media Technologies and Public Culture");
-        }
-        if (course_object.ocw){
-            reqs.push("Organization, Communication, and Work");
-        }
-        if (course_object.raa){
-            reqs.push("Rhetoric, Activism, and Advocacy");
-        }
-        if (course_object.m){
-            reqs.push("Modes of Inquiry");
-        }
-        if (course_object.r){
-            reqs.push("Representation Identity and Difference");
-        }
+        const reqs = getReqsListFromCourseNum(course_number.value);
         reqs.forEach (req => {
             reqs_list.innerHTML += req + ";&nbsp;";
         });
@@ -428,6 +438,36 @@ function handleCourseNumChange(){
 
 
     
+}
+
+function getReqsListFromCourseNum(number){
+    if(typeof(number) != "string" || number.length === 0){
+        return;
+    }
+    let reqs = [];
+    const course_object = courseNumberToObject(number);
+    if (course_object.cel){
+        reqs.push("Communication and Everyday Life");
+    }
+    if (course_object.mapc){
+        reqs.push("Media Arts, Performance, and Critical Practice");
+    }
+    if (course_object.mtpc){
+        reqs.push("Media Technologies and Public Culture");
+    }
+    if (course_object.ocw){
+        reqs.push("Organization, Communication, and Work");
+    }
+    if (course_object.raa){
+        reqs.push("Rhetoric, Activism, and Advocacy");
+    }
+    if (course_object.m){
+        reqs.push("Modes of Inquiry");
+    }
+    if (course_object.r){
+        reqs.push("Representation Identity and Difference");
+    }
+    return reqs;
 }
 
 function handleSubmit(event){
