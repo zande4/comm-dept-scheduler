@@ -100,11 +100,8 @@ function generateChecklist(){
         }
     });
 
-    console.log("I am running");
-    console.log(sortedCourses.keys());
     for (const unit of sortedCourses.keys()){
         generateUnitChecklist(unit);
-        console.log("generated for " + unit);
     }
 }
 
@@ -509,7 +506,6 @@ function handleDropdownSelect(resource){
             filteredEvents.push(event);
         }
     });
-    console.log(filteredEvents);
     calendar.setOption('events', filteredEvents);
 }
 

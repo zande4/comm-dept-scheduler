@@ -156,7 +156,7 @@
         
         <h3>Preferred Class Times</h3>
         <div>
-            <label for="day">Days of week</label>
+            <label for="day">Days and times: </label>
             <select id="day" name="day">
                 <option value="monwedfri">Mon/Wed/Fri</option>
                 <option value="monwed">Mon/Wed</option>
@@ -185,12 +185,14 @@
                 <option value="19">5:45pm - 6:35pm</option>
                 <option value="20" hidden>5:45pm - 7:00pm</option>
             </select>
-            <label for="other-time">Other days/times</label>
-            <input type="checkbox" id="other-time">
-            <label for="other-time-days">Days:</label>
-            <input type="text" id="other-time-days">
-            <label for="other-time-hours">Hours:</label>
-            <input type="text" id="other-time-hours">
+            <div>
+                <label for="other-time">Other days/times</label>
+                <input type="checkbox" id="other-time">
+                <label for="other-time-days">Days:</label>
+                <input type="text" id="other-time-days">
+                <label for="other-time-hours">Hours:</label>
+                <input type="text" id="other-time-hours">
+            </div>
             <button id="add-pref-button">Add another day/time</button>
         </div>
 
