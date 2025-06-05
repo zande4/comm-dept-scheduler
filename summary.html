@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@event-calendar/build@4.3.0/dist/event-calendar.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/@event-calendar/build@3.12.0/event-calendar.min.js"></script>
@@ -37,17 +40,16 @@
     <section>
         <h2>Schedule</h2>
         <div id="calendar-filters">
-            <input type="radio" name="cal-filter" value="pathway" id="pathway-filter">
-            <label for="pathway-filter">Filter by pathway</label>
+            <input type="radio" name="cal-filter" value="requirement" id="req-filter">
+            <label for="req-filter">Filter by requirement</label>
             <input type="radio" name="cal-filter" value="instructor" id="instructor-filter">
             <label for="instructor-filter">Filter by instructor</label>
-            <input type="radio" name="cal-filter" value="moi" id="moi-filter">
-            <label for="moi-filter">Modes of Inquiry</label>
-            <input type="radio" name="cal-filter" value="rid" id="rid-filter">
-            <label for="rid-filter">Representation, Identity, and Difference</label>
+            <input type="radio" name="cal-filter" value="unit" id="unit-filter">
+            <label for="unit-filter">Filter by unit</label>
             <select id="filter-select">
 
             </select>
+            <button id="clear-filter-button">Clear Filters</button>
         </div>
         <div id="schedule">
 

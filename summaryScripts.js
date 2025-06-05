@@ -5,7 +5,8 @@ let faculty = new Map();
 let calendar;
 let events = [];
 let resources = [];
-const dayStr = new Map([["monwedfri", "Mon/Wed/Fri"], ["monwed", "Mon/Wed"], ["tuesthur", "Tues/Thur"]]);
+const units = ["Rhetoric", "Interpersonal and Organizational Communication", "Performance Studies", "Media and Technology Studies", "Media Arts"];
+const dayStr = new Map([["monwedfri", "Mon/Wed/Fri"], ["monwed", "Mon/Wed"], ["tuesthur", "Tues/Thur"], ["mon", "Mon"]]);
 const timeStr = new Map([["1", "8:00am - 8:50am"], ["2", "8:00am - 9:15am"], ["3", "9:05am - 9:55am"], ["4", "9:05am - 10:20am"], ["5", "9:30am - 10:45am"], ["6", "10:10am - 11:00am"],
 ["7", "10:10am - 11:25am"], ["8", "11:00am - 12:15pm"], ["9","11:15am - 12:05pm"],
 ["10", "11:15am - 12:30pm"], ["11", "12:20pm - 1:10pm"], ["12", "12:20pm - 1:35pm"], ["13", "12:30pm - 1:45pm"],
@@ -72,6 +73,7 @@ function createEventListeners(){
         radio.addEventListener("change", handleFilterSelect);
     })
     dropdown.addEventListener("change", handleDropdownSelect);
+    document.getElementById("clear-filter-button").addEventListener("click", handleClearFilter);
     document.getElementById("summary").addEventListener("click", generateDocument);
     document.getElementById("export").addEventListener("click", exportData);
 }
@@ -290,11 +292,11 @@ function courseNumIsSpecialTopics(number){
 function parseCoursesToEvents(course){
     //adds an object(s) of the format {title: "", start: "", end: ""} for a given course offering to a global event array
     let rv = {title: "", start: "", end: "", resourceIds: [course.instructor]};
-    resources.push({id: course.instructor});
     let reqs = getCourseReqs(courseNumberToObject(course.number));
     reqs.forEach(req  => {
         rv.resourceIds.push(req);
     });
+    rv.resourceIds.push(course.unit);
     rv.title = "COMM " + course.number + " " + course.instructor;
     
     let daysofweek = [];
@@ -302,7 +304,9 @@ function parseCoursesToEvents(course){
         case "monwedfri":
             daysofweek.push(DAYS.mon);
             daysofweek.push(DAYS.wed);
-            daysofweek.push(DAYS.fri);
+            if (!course.recitation){
+                daysofweek.push(DAYS.fri);
+            }
             break;
         case "monwed":
             daysofweek.push(DAYS.mon);
@@ -311,6 +315,9 @@ function parseCoursesToEvents(course){
         case "tuesthur":
             daysofweek.push(DAYS.tue);
             daysofweek.push(DAYS.thur);
+            break;
+        case "mon":
+            daysofweek.push(DAYS.mon);
             break;
     }
     let timestart = "";
@@ -396,6 +403,12 @@ function parseCoursesToEvents(course){
             timestart = "17:45";
             timeend = "19:00";
             break;
+        case "21":
+            timestart = "14:45";
+            timeend = "17:25";
+        case "22":
+            timestart = "17:45"
+            timeend = "20:25";
     }
     daysofweek.forEach(day => {
         rv.start = WEEK + day + " " + timestart;
@@ -466,11 +479,11 @@ function handleFilterSelect(event){
     if (target.name === 'cal-filter' && target.type === 'radio') {
         dropdown.replaceChildren();
         switch (target.value){
-            case "pathway":
-                for (const path in pathways){
+            case "requirement":
+                for (const req of requirements.keys()){
                     const opt = document.createElement("option");
-                    opt.value = path;
-                    opt.innerText = pathways[path];
+                    opt.value = req;
+                    opt.innerText = requirements.get(req)[0];
                     dropdown.appendChild(opt);
                 }
                 break;
@@ -482,24 +495,20 @@ function handleFilterSelect(event){
                     dropdown.appendChild(opt);
                 }
                 break;
-            case "moi":
-                handleDropdownSelect("moi");
-                break;
-            case "rid":
-                handleDropdownSelect("rid");
+            case "unit":
+                for (const unit of units){
+                    const opt = document.createElement("option");
+                    opt.value = unit;
+                    opt.innerText = unit;
+                    dropdown.appendChild(opt);
+                }
                 break;
         }
     }
 }
 
-function handleDropdownSelect(resource){
-    let resourceId;
-    if (typeof(resource) === "string"){
-        resourceId = resource;
-    }
-    else {
-        resourceId = dropdown.value;
-    }
+function handleDropdownSelect(){
+    let resourceId = dropdown.value;
     let filteredEvents = [];
     events.forEach(event => {
         if (event.resourceIds.includes(resourceId)){
@@ -507,6 +516,10 @@ function handleDropdownSelect(resource){
         }
     });
     calendar.setOption('events', filteredEvents);
+}
+
+function handleClearFilter(){
+    calendar.setOption('events', events);
 }
 
 function generateDocument(){

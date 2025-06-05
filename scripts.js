@@ -21,22 +21,25 @@ let selected_course_id = "";
 let formData = [];
 let courseOfferings = [];
 const fields = ["number", "instructor", "enrollment", "crosslisted", "numTA", "day", "time",
-"other-time", "other-time-days", "other-time-hours", "service-rec", "year-res", "major-res", "classroom",];
+"other-time", "other-time-days", "other-time-hours", "service-rec", "year-res", "major-res", "classroom",
+"classroom-select", "classroom-needed", "recitation"];
 let currentCourse = 0;
 //HTML nodes
 const unit_select = document.getElementById("unit-name");
 const course_number = document.getElementById("course-num");
 const back_button = document.getElementById("back");
 const add_button = document.getElementById("add-course");
+const delete_button = document.getElementById("delete-course");
 const next_button = document.getElementById("next");
 const page_number = document.getElementById("page-num");
 const page_total = document.getElementById("page-total");
 const instructor = document.getElementById("instructor");
 const reqs_list = document.getElementById("requirements-list");
+const classroom_select = document.getElementById("classroom-select");
 
 class CourseOffering {
     constructor(unit, number, instructor, name, description, pathways, enrollment, crosslisted, numTA, day, time, other_time, other_time_days,
-        other_time_hours, service_rec, year_res, major_res, classroom){
+        other_time_hours, recitation, service_rec, year_res, major_res, classroom_select, classroom){
         this.unit = unit;
         this.number = number;
         this.instructor = instructor;
@@ -51,9 +54,11 @@ class CourseOffering {
         this.other_time = other_time;
         this.other_time_days = other_time_days;
         this.other_time_hours = other_time_hours;
+        this.recitation = recitation;
         this.service_rec = service_rec;
         this.year_res = year_res;
         this.major_res = major_res;
+        this.classroom_select = classroom_select;
         this.classroom = classroom;
     }
 }
@@ -111,6 +116,8 @@ function generateEventListeners(){
                 time_select.querySelector('option[value="18"').hidden = true;
                 time_select.querySelector('option[value="19"').hidden = false;
                 time_select.querySelector('option[value="20"').hidden = true;
+                time_select.querySelector('option[value="21"').hidden = true;
+                time_select.querySelector('option[value="22"').hidden = true;
                 time_select.value = "1";
                 break;
             case "monwed":
@@ -134,6 +141,8 @@ function generateEventListeners(){
                 time_select.querySelector('option[value="18"').hidden = true;
                 time_select.querySelector('option[value="19"').hidden = true;
                 time_select.querySelector('option[value="20"').hidden = false;
+                time_select.querySelector('option[value="21"').hidden = true;
+                time_select.querySelector('option[value="22"').hidden = true;
                 time_select.value = "1";
                 break;
             case "tuesthur":
@@ -157,7 +166,34 @@ function generateEventListeners(){
                 time_select.querySelector('option[value="18"').hidden = false;
                 time_select.querySelector('option[value="19"').hidden = true;
                 time_select.querySelector('option[value="20"').hidden = true;
+                time_select.querySelector('option[value="21"').hidden = true;
+                time_select.querySelector('option[value="22"').hidden = true;
                 time_select.value = "2";
+                break;
+            case "mon":
+                time_select.querySelector('option[value="1"').hidden = true;
+                time_select.querySelector('option[value="2"').hidden = true;
+                time_select.querySelector('option[value="3"').hidden = true;
+                time_select.querySelector('option[value="4"').hidden = true;
+                time_select.querySelector('option[value="5"').hidden = true;
+                time_select.querySelector('option[value="6"').hidden = true;
+                time_select.querySelector('option[value="7"').hidden = true;
+                time_select.querySelector('option[value="8"').hidden = true;
+                time_select.querySelector('option[value="9"').hidden = true;
+                time_select.querySelector('option[value="10"').hidden = true;
+                time_select.querySelector('option[value="11"').hidden = true;
+                time_select.querySelector('option[value="12"').hidden = true;
+                time_select.querySelector('option[value="13"').hidden = true;
+                time_select.querySelector('option[value="14"').hidden = true;
+                time_select.querySelector('option[value="15"').hidden = true;
+                time_select.querySelector('option[value="16"').hidden = true;
+                time_select.querySelector('option[value="17"').hidden = true;
+                time_select.querySelector('option[value="18"').hidden = true;
+                time_select.querySelector('option[value="19"').hidden = true;
+                time_select.querySelector('option[value="20"').hidden = true;
+                time_select.querySelector('option[value="21"').hidden = false;
+                time_select.querySelector('option[value="22"').hidden = false;
+                time_select.value = "21";
                 break;
         }
     })
@@ -216,6 +252,9 @@ function generateEventListeners(){
 
     add_button.addEventListener("click", handleAddCourse);
 
+    delete_button.style.display = "none";
+    delete_button.addEventListener("click", handleDeleteCourse);
+
     const filter_button = document.getElementById("submit-search");
     filter_button.addEventListener("click", sortAndFilter);
 
@@ -224,6 +263,9 @@ function generateEventListeners(){
 
     const test_button = document.getElementById("test-button");
     test_button.addEventListener("click", handleTestButton);
+
+    document.getElementById("classroom-needed").addEventListener("click", handleClassroomNeededToggle);
+    classroom_select.style.display = "none";
 
     document.getElementById("import").addEventListener("change", handleImport);
 }
@@ -325,7 +367,7 @@ function createCourseOffering(index){
 
     return new CourseOffering(unit, entry.get("number"), entry.get("instructor"), entry.get("title"), entry.get("description"), pathways, entry.get("enrollment"), entry.get("crosslisted"),
      entry.get("numTA"), entry.get("day"), entry.get("time"), entry.get("other-time"), entry.get("other-time-days"),
-     entry.get("other-time-hours"), entry.get("service-rec"), entry.get("year-res"), entry.get("major-res"), entry.get("classroom"));
+     entry.get("other-time-hours"), entry.get("recitation"), entry.get("service-rec"), entry.get("year-res"), entry.get("major-res"), entry.get("classroom-select"), entry.get("classroom"));
 }
 
 function courseNumberToObject(number){
@@ -364,6 +406,7 @@ function handleAddCourse(event){
     event.preventDefault();
     if (form.reportValidity()){
         back_button.style.removeProperty("display");
+        delete_button.style.removeProperty("display");
         formData[currentCourse] = (new FormData(form));
         currentCourse++;
         form.reset();
@@ -371,6 +414,18 @@ function handleAddCourse(event){
         page_number.innerText = currentCourse + 1;
         page_total.innerText = "/" + (formData.length + 1);
     }
+}
+
+function handleDeleteCourse(event){
+    event.preventDefault();
+    formData.splice(currentCourse, currentCourse);
+    if (formData.length <= 1){
+        delete_button.style.display = "none";
+    }
+    if (formData.length === currentCourse){
+        currentCourse--;
+    }
+    renderForm();
 }
 
 function handleCourseSelectToggle(event){
@@ -468,6 +523,15 @@ function getReqsListFromCourseNum(number){
         reqs.push("Representation Identity and Difference");
     }
     return reqs;
+}
+
+function handleClassroomNeededToggle(event){
+    if (event.target.checked){
+        classroom_select.style.removeProperty("display");
+    }
+    else{
+        classroom_select.style.display = "none";
+    }
 }
 
 function handleSubmit(event){

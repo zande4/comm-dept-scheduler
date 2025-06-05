@@ -1,6 +1,8 @@
 body{
-    font-family: Georgia, serif;
+    font-family: "Merriweather", Georgia, serif;
+    background-color: #4B9CD3;
     margin: 15px;
+    line-height: 1.75;
 }
 
 table{
@@ -12,10 +14,11 @@ td{
 }
 
 form{
-    border: solid rgb(50, 50, 50) 2px;
+    background-color: white;
     border-radius: 5px;
-    padding: 10px;
-    width: max-content;
+    padding: 15px;
+    width: 75vw;
+    margin: 0vw 12vw;
 }
 
 .form-nav{
@@ -60,6 +63,10 @@ form{
 
 .inline-label{
     display: inline-block;
+}
+
+.form-section{
+    margin: 10px;
 }
 
 .grayed-out{
