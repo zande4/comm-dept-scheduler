@@ -244,7 +244,7 @@ function generateCourseList(){
         }
 
         let time = document.createElement("li");
-        time.innerText = dayStr.get(course.day) + " " + timeStr.get(course.time);
+        time.innerText = dayStr.get(course.day_time[0].day) + " " + timeslotToString(course.day_time[0].time);
         let enrollment = document.createElement("li");
         enrollment.innerText = "Enrollment: " + course.enrollment;
         let crosslisted = document.createElement("li");
@@ -285,6 +285,18 @@ function generateCourseList(){
     }
 }
 
+function timeslotToString(timeslot){
+    let [hour, minute] = timeslot.start.split(':').map(Number);
+    let ampm = hour >= 12 ? 'PM' : 'AM';
+    hour = hour % 12 || 12;
+    const startStr = `${hour}:${minute.toString().padStart(2, '0')}${ampm}`;
+    [hour, minute] = timeslot.end.split(':').map(Number);
+    ampm = hour >= 12 ? 'PM' : 'AM';
+    hour = hour % 12 || 12;
+    const endStr =  `${hour}:${minute.toString().padStart(2, '0')}${ampm}`;
+    return startStr + " - " + endStr;
+}
+
 function courseNumIsSpecialTopics(number){
     return(number === "89" || number === "390" || number === "490" || number === "690");
 }
@@ -300,7 +312,7 @@ function parseCoursesToEvents(course){
     rv.title = "COMM " + course.number + " " + course.instructor;
     
     let daysofweek = [];
-    switch (course.day){
+    switch (course.day_time[0].day){
         case "monwedfri":
             daysofweek.push(DAYS.mon);
             daysofweek.push(DAYS.wed);
@@ -320,96 +332,9 @@ function parseCoursesToEvents(course){
             daysofweek.push(DAYS.mon);
             break;
     }
-    let timestart = "";
-    let timeend = "";
-    switch (course.time){
-        case "1":
-            timestart = "08:00";
-            timeend = "08:50";
-            break;
-        case "2":
-            timestart = "08:00";
-            timeend = "09:15";
-            break;
-        case "3":
-            timestart = "09:05";
-            timeend = "09:55";
-            break;
-        case "4":
-            timestart = "09:05";
-            timeend = "10:20";
-            break;
-        case "5":
-            timestart = "09:30";
-            timeend = "10:45";
-            break;
-        case "6":
-            timestart = "10:10";
-            timeend = "11:00";
-            break;
-        case "7":
-            timestart = "10:10";
-            timeend = "11:25";
-            break;
-        case "8":
-            timestart = "11:00";
-            timeend = "12:15";
-            break;
-        case "9":
-            timestart = "11:15";
-            timeend = "12:05";
-            break;
-        case "10":
-            timestart = "011:15";
-            timeend = "12:30";
-            break;
-        case "11":
-            timestart = "12:20";
-            timeend = "13:10";
-            break;
-        case "12":
-            timestart = "12:20";
-            timeend = "13:35";
-            break;
-        case "13":
-            timestart = "12:30";
-            timeend = "13:45";
-            break;
-        case "14":
-            timestart = "13:25";
-            timeend = "14:15";
-            break;
-        case "15":
-            timestart = "13:25";
-            timeend = "14:40";
-            break;
-        case "16":
-            timestart = "14:00";
-            timeend = "15:15";
-            break;
-        case "17":
-            timestart = "15:30";
-            timeend = "16:45";
-            break;
-        case "18":
-            timestart = "17:00";
-            timeend = "18:15";
-            break;
-        case "19":
-            timestart = "17:45";
-            timeend = "18:35";
-            break;
-        case "20":
-            timestart = "17:45";
-            timeend = "19:00";
-            break;
-        case "21":
-            timestart = "14:45";
-            timeend = "17:25";
-        case "22":
-            timestart = "17:45"
-            timeend = "20:25";
-    }
+    let timestart = course.day_time[0].time.start;
+    let timeend = course.day_time[0].time.end;
+    
     daysofweek.forEach(day => {
         rv.start = WEEK + day + " " + timestart;
         rv.end = WEEK + day + " " + timeend;
@@ -423,26 +348,19 @@ function courseNumberToObject(number){
 
 function getCourseReqs(course){
     let rv = [];
-    if (course.cel){
-        rv.push("cel");
-    }
-    if (course.mapc){
-        rv.push("mapc");
-    }
-    if (course.mtpc){
-        rv.push("mtpc");
-    }
-    if (course.ocw){
-        rv.push("ocw");
-    }
-    if (course.raa){
-        rv.push("raa");
-    }
-    if (course.m){
-        rv.push("moi");
-    }
-    if (course.r){
-        rv.push("rid");
+    for (const req of requirements.keys()){
+        if ((req === "COMMBEYOND" || req === "FY_SEMINAR") && course.ideas.includes(req)){
+            rv.push(req);
+        }
+        else if (req === "lower" && course.number < 400){
+            rv.push(req);
+        }
+        else if (req === "upper" && course.number >= 400){
+            rv.push(req);
+        }
+        else if (course[req] === true){
+            rv.push(req);
+        }
     }
     return rv;
 }

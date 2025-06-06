@@ -1,8 +1,11 @@
 body{
     font-family: "Merriweather", Georgia, serif;
-    background-color: #4B9CD3;
     margin: 15px;
     line-height: 1.75;
+}
+
+.dark-bg{
+    background-color: #4B9CD3;
 }
 
 table{
@@ -19,6 +22,16 @@ form{
     padding: 15px;
     width: 75vw;
     margin: 0vw 12vw;
+}
+
+textarea{
+    width: 80%;
+    height: 100px;
+    display: block;
+}
+
+.long{
+    width: 75%;
 }
 
 .form-nav{

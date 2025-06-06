@@ -1,16 +1,6 @@
-/*TODO:
-    Support special topics courses
-    data validate course numbers
-    calendar color-coding
-    allow alternate course times
-    allow edits
-    download outputs
-    allow file inputs
-    add styles    
-*/
-
 document.addEventListener('DOMContentLoaded', () => {
     parseCSV(() => {
+        onLoadBehavior();
         generateEventListeners();
     });
 });
@@ -20,10 +10,8 @@ let unit = "Rhetoric";
 let selected_course_id = "";
 let formData = [];
 let courseOfferings = [];
-const fields = ["number", "instructor", "enrollment", "crosslisted", "numTA", "day", "time",
-"other-time", "other-time-days", "other-time-hours", "service-rec", "year-res", "major-res", "classroom",
-"classroom-select", "classroom-needed", "recitation"];
 let currentCourse = 0;
+let timeslots = [];
 //HTML nodes
 const unit_select = document.getElementById("unit-name");
 const course_number = document.getElementById("course-num");
@@ -36,9 +24,11 @@ const page_total = document.getElementById("page-total");
 const instructor = document.getElementById("instructor");
 const reqs_list = document.getElementById("requirements-list");
 const classroom_select = document.getElementById("classroom-select");
+const time_select = document.getElementById("time");
+const day_select = document.getElementById("day");
 
 class CourseOffering {
-    constructor(unit, number, instructor, name, description, pathways, enrollment, crosslisted, numTA, day, time, other_time, other_time_days,
+    constructor(unit, number, instructor, name, description, pathways, enrollment, crosslisted, numTA, day_time, other_time, other_time_days,
         other_time_hours, recitation, service_rec, year_res, major_res, classroom_select, classroom){
         this.unit = unit;
         this.number = number;
@@ -49,8 +39,7 @@ class CourseOffering {
         this.enrollment = enrollment;
         this.crosslisted = crosslisted;
         this.numTA = numTA;
-        this.day = day;
-        this.time = time;
+        this.day_time = day_time;
         this.other_time = other_time;
         this.other_time_days = other_time_days;
         this.other_time_hours = other_time_hours;
@@ -83,120 +72,73 @@ class Course{
     }
 }   
 
+class Timeslot{
+    constructor(id, dayCompatability, start, end){
+        this.id = id;
+        this.dayCompatability = dayCompatability;
+        this.start = start;
+        this.end = end;
+    }
+}
 
+
+function onLoadBehavior(){
+    timeslots.push(new Timeslot("01", ["monwedfri"], "08:00", "08:50"));
+    timeslots.push(new Timeslot("02", ["monwed", "tuesthur"], "08:00", "09:15"));
+    timeslots.push(new Timeslot("03", ["monwedfri"], "09:05", "09:55"));
+    timeslots.push(new Timeslot("04", ["monwed"], "09:05", "10:20"));
+    timeslots.push(new Timeslot("05", ["tuesthur"], "09:30", "10:45"));
+    timeslots.push(new Timeslot("06", ["monwedfri"], "10:10", "11:00"));
+    timeslots.push(new Timeslot("07", ["monwed"], "10:10", "11:25"));
+    timeslots.push(new Timeslot("08", ["tuesthur"], "11:00", "12:15"));
+    timeslots.push(new Timeslot("09", ["monwedfri"], "11:15", "12:05"));
+    timeslots.push(new Timeslot("10", ["monwed"], "11:15", "12:30"));
+    timeslots.push(new Timeslot("11", ["monwedfri"], "12:20", "13:10"));
+    timeslots.push(new Timeslot("12", ["monwed"], "12:20", "13:35"));
+    timeslots.push(new Timeslot("13", ["tuesthur"], "12:30", "13:45"));
+    timeslots.push(new Timeslot("14", ["monwedfri"], "13:25", "14:15"));
+    timeslots.push(new Timeslot("15", ["monwed"], "13:25", "14:40"));
+    timeslots.push(new Timeslot("16", ["tuesthur"], "14:00", "15:15"));
+    timeslots.push(new Timeslot("17", ["mon"], "14:45", "17:25"));
+    timeslots.push(new Timeslot("18", ["tuesthur"], "15:30", "16:45"));
+    timeslots.push(new Timeslot("19", ["tuesthur"], "17:00", "18:15"));
+    timeslots.push(new Timeslot("20", ["monwedfri"], "17:45", "18:35"));
+    timeslots.push(new Timeslot("21", ["tuesthur"], "17:45", "19:00"));
+    timeslots.push(new Timeslot("22", ["mon"], "17:45", "20:25"));
+
+    handleDaySelectChange();
+}
+
+function timeslotToString(timeslot){
+    let [hour, minute] = timeslot.start.split(':').map(Number);
+    let ampm = hour >= 12 ? 'PM' : 'AM';
+    hour = hour % 12 || 12;
+    const startStr = `${hour}:${minute.toString().padStart(2, '0')}${ampm}`;
+    [hour, minute] = timeslot.end.split(':').map(Number);
+    ampm = hour >= 12 ? 'PM' : 'AM';
+    hour = hour % 12 || 12;
+    const endStr =  `${hour}:${minute.toString().padStart(2, '0')}${ampm}`;
+    return startStr + " - " + endStr;
+}
+
+function handleDaySelectChange(){
+    time_select.replaceChildren();
+    for (const time of timeslots){
+        if (time.dayCompatability.includes(day_select.value)){
+            let opt = document.createElement("option");
+            opt.value = time.id;
+            opt.innerText = timeslotToString(time);
+            time_select.appendChild(opt);
+        }
+    }
+}
 //EVENT LISTENERS
 
 function generateEventListeners(){
     unit_select.addEventListener("change", function() {
         unit = unit_select.value;
     });
-
-    const day_select = document.getElementById("day");
-    const time_select = document.getElementById("time");
-    day_select.addEventListener("change", function() {
-        switch(day_select.value){
-            case "monwedfri":
-                time_select.querySelector('option[value="1"').hidden = false;
-                time_select.querySelector('option[value="2"').hidden = true;
-                time_select.querySelector('option[value="3"').hidden = false;
-                time_select.querySelector('option[value="4"').hidden = true;
-                time_select.querySelector('option[value="5"').hidden = true;
-                time_select.querySelector('option[value="6"').hidden = false;
-                time_select.querySelector('option[value="7"').hidden = true;
-                time_select.querySelector('option[value="8"').hidden = true;
-                time_select.querySelector('option[value="9"').hidden = false;
-                time_select.querySelector('option[value="10"').hidden = true;
-                time_select.querySelector('option[value="11"').hidden = false;
-                time_select.querySelector('option[value="12"').hidden = true;
-                time_select.querySelector('option[value="13"').hidden = true;
-                time_select.querySelector('option[value="14"').hidden = false;
-                time_select.querySelector('option[value="15"').hidden = true;
-                time_select.querySelector('option[value="16"').hidden = true;
-                time_select.querySelector('option[value="17"').hidden = true;
-                time_select.querySelector('option[value="18"').hidden = true;
-                time_select.querySelector('option[value="19"').hidden = false;
-                time_select.querySelector('option[value="20"').hidden = true;
-                time_select.querySelector('option[value="21"').hidden = true;
-                time_select.querySelector('option[value="22"').hidden = true;
-                time_select.value = "1";
-                break;
-            case "monwed":
-                time_select.querySelector('option[value="1"').hidden = true;
-                time_select.querySelector('option[value="2"').hidden = false;
-                time_select.querySelector('option[value="3"').hidden = false;
-                time_select.querySelector('option[value="4"').hidden = true;
-                time_select.querySelector('option[value="5"').hidden = true;
-                time_select.querySelector('option[value="6"').hidden = false;
-                time_select.querySelector('option[value="7"').hidden = true;
-                time_select.querySelector('option[value="8"').hidden = true;
-                time_select.querySelector('option[value="9"').hidden = false;
-                time_select.querySelector('option[value="10"').hidden = true;
-                time_select.querySelector('option[value="11"').hidden = true;
-                time_select.querySelector('option[value="12"').hidden = false;
-                time_select.querySelector('option[value="13"').hidden = true;
-                time_select.querySelector('option[value="14"').hidden = true;
-                time_select.querySelector('option[value="15"').hidden = false;
-                time_select.querySelector('option[value="16"').hidden = true;
-                time_select.querySelector('option[value="17"').hidden = true;
-                time_select.querySelector('option[value="18"').hidden = true;
-                time_select.querySelector('option[value="19"').hidden = true;
-                time_select.querySelector('option[value="20"').hidden = false;
-                time_select.querySelector('option[value="21"').hidden = true;
-                time_select.querySelector('option[value="22"').hidden = true;
-                time_select.value = "1";
-                break;
-            case "tuesthur":
-                time_select.querySelector('option[value="1"').hidden = true;
-                time_select.querySelector('option[value="2"').hidden = false;
-                time_select.querySelector('option[value="3"').hidden = true;
-                time_select.querySelector('option[value="4"').hidden = true;
-                time_select.querySelector('option[value="5"').hidden = false;
-                time_select.querySelector('option[value="6"').hidden = true;
-                time_select.querySelector('option[value="7"').hidden = true;
-                time_select.querySelector('option[value="8"').hidden = false;
-                time_select.querySelector('option[value="9"').hidden = true;
-                time_select.querySelector('option[value="10"').hidden = true;
-                time_select.querySelector('option[value="11"').hidden = true;
-                time_select.querySelector('option[value="12"').hidden = true;
-                time_select.querySelector('option[value="13"').hidden = false;
-                time_select.querySelector('option[value="14"').hidden = true;
-                time_select.querySelector('option[value="15"').hidden = true;
-                time_select.querySelector('option[value="16"').hidden = false;
-                time_select.querySelector('option[value="17"').hidden = false;
-                time_select.querySelector('option[value="18"').hidden = false;
-                time_select.querySelector('option[value="19"').hidden = true;
-                time_select.querySelector('option[value="20"').hidden = true;
-                time_select.querySelector('option[value="21"').hidden = true;
-                time_select.querySelector('option[value="22"').hidden = true;
-                time_select.value = "2";
-                break;
-            case "mon":
-                time_select.querySelector('option[value="1"').hidden = true;
-                time_select.querySelector('option[value="2"').hidden = true;
-                time_select.querySelector('option[value="3"').hidden = true;
-                time_select.querySelector('option[value="4"').hidden = true;
-                time_select.querySelector('option[value="5"').hidden = true;
-                time_select.querySelector('option[value="6"').hidden = true;
-                time_select.querySelector('option[value="7"').hidden = true;
-                time_select.querySelector('option[value="8"').hidden = true;
-                time_select.querySelector('option[value="9"').hidden = true;
-                time_select.querySelector('option[value="10"').hidden = true;
-                time_select.querySelector('option[value="11"').hidden = true;
-                time_select.querySelector('option[value="12"').hidden = true;
-                time_select.querySelector('option[value="13"').hidden = true;
-                time_select.querySelector('option[value="14"').hidden = true;
-                time_select.querySelector('option[value="15"').hidden = true;
-                time_select.querySelector('option[value="16"').hidden = true;
-                time_select.querySelector('option[value="17"').hidden = true;
-                time_select.querySelector('option[value="18"').hidden = true;
-                time_select.querySelector('option[value="19"').hidden = true;
-                time_select.querySelector('option[value="20"').hidden = true;
-                time_select.querySelector('option[value="21"').hidden = false;
-                time_select.querySelector('option[value="22"').hidden = false;
-                time_select.value = "21";
-                break;
-        }
-    })
+    day_select.addEventListener("change", handleDaySelectChange);
 
     const other_time = document.getElementById("other-time");
     const other_time_days = document.getElementById("other-time-days");
@@ -274,9 +216,16 @@ function generateEventListeners(){
 
 function renderForm(){
     form.reset();
-    fields.forEach(name => {
-        form[name].value = formData[currentCourse].get(name);
-    });
+    for (const [name, value] of formData[currentCourse].entries()) {
+        const field = document.querySelector(`[name="${name}"]`);
+        if (!field) continue;
+
+        if (field.type === "checkbox" || field.type === "radio") {
+            field.checked = value === field.value;
+        } else {
+            field.value = value;
+        }
+    }
     if (course_number.value === "89" || course_number.value === "390" || course_number.value === "490" || course_number.value === "690"){
         document.getElementById("title").required = true;
         document.getElementById("description").required = true;
@@ -365,8 +314,20 @@ function createCourseOffering(index){
         pathways.push(entry.get(path));
     })
 
+    //create array of day-time objects in the format {day: "", time: Timeslot}
+    let time = [];
+    for (let i = 1; i <= 3; i++) {
+        const time_value = entry.get(`timeslot-${i}`);
+        const day_value = entry.get(`day-${i}`);
+
+        if (time_value && day_value){
+            time.push({day: day_value, time: timeslots.find(obj => obj.id === time_value)});
+        }
+    }
+    console.log(time);
+
     return new CourseOffering(unit, entry.get("number"), entry.get("instructor"), entry.get("title"), entry.get("description"), pathways, entry.get("enrollment"), entry.get("crosslisted"),
-     entry.get("numTA"), entry.get("day"), entry.get("time"), entry.get("other-time"), entry.get("other-time-days"),
+     entry.get("numTA"), time, entry.get("other-time"), entry.get("other-time-days"),
      entry.get("other-time-hours"), entry.get("recitation"), entry.get("service-rec"), entry.get("year-res"), entry.get("major-res"), entry.get("classroom-select"), entry.get("classroom"));
 }
 
