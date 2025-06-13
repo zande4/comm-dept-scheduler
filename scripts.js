@@ -261,9 +261,6 @@ function generateEventListeners(){
     const confirm_button = document.getElementById("confirm-selection");
     confirm_button.addEventListener("click", handleSelectionConfirmation);
 
-    const test_button = document.getElementById("test-button");
-    test_button.addEventListener("click", handleTestButton);
-
     document.getElementById("classroom-needed").addEventListener("click", handleClassroomNeededToggle);
     classroom_select.style.display = "none";
 
@@ -630,18 +627,6 @@ function handleSubmit(event){
         location.href = './summary.html';
     }
     
-}
-
-function handleTestButton(event){
-    event.preventDefault();
-    course_number.value = "120";
-    instructor.value = "Zoe";
-    handleAddCourse(event);
-    course_number.value = "62";
-    document.getElementById("day").value = "tuesthur";
-    document.getElementById("time").value = "8";
-    instructor.value = "Avi";
-    handleSubmit(event);
 }
 
 function handleOtherTimeToggle(event){
