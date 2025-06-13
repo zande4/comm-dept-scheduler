@@ -119,25 +119,41 @@
                 </div>
                 <h4>Select what pathways the course is found in</h4>
                 <div class="form-section">
-                    <div>
-                        <label for="cel-checkbox">Communication and Everyday Life</label>
-                        <input type="checkbox" name="cel" id="cel-checkbox">
+                    <div class="inline-label">
+                        <div>
+                            <label for="cel-checkbox">Communication and Everyday Life</label>
+                            <input type="checkbox" name="cel" id="cel-checkbox">
+                        </div>
+                        <div>
+                            <label for="mapc-checkbox">Media Arts, Performance, and Critical Practice</label>
+                            <input type="checkbox" name="mapc" id="mapc-checkbox">
+                        </div>
+                        <div>
+                            <label for="mtpc-checkbox">Media Technologies and Public Culture</label>
+                            <input type="checkbox" name="mtpc" id="mtpc-checkbox">
+                        </div>
+                        <div>
+                            <label for="ocw-checkbox">Organization, Communication, and Work</label>
+                            <input type="checkbox" name="ocw" id="ocw-checkbox">
+                        </div>
+                        <div>
+                            <label for="raa-checkbox">Rhetoric, Activism, and Advocacy</label>
+                            <input type="checkbox" name="raa" id="raa-checkbox">
+                        </div>
                     </div>
-                    <div>
-                        <label for="mapc-checkbox">Media Arts, Performance, and Critical Practice</label>
-                        <input type="checkbox" name="mapc" id="mapc-checkbox">
-                    </div>
-                    <div>
-                        <label for="mtpc-checkbox">Media Technologies and Public Culture</label>
-                        <input type="checkbox" name="mtpc" id="mtpc-checkbox">
-                    </div>
-                    <div>
-                        <label for="ocw-checkbox">Organization, Communication, and Work</label>
-                        <input type="checkbox" name="ocw" id="ocw-checkbox">
-                    </div>
-                    <div>
-                        <label for="raa-checkbox">Rhetoric, Activism, and Advocacy</label>
-                        <input type="checkbox" name="raa" id="raa-checkbox">
+                    <div class="inline-label">
+                        <div>
+                            <label for="moi-checkbox">Modes of Inquiry</label>
+                            <input type="checkbox" name="moi" id="moi-checkbox">
+                        </div>
+                        <div>
+                            <label for="rid-checkbox">Representation, Identity, and Difference</label>
+                            <input type="checkbox" name="rid" id="rid-checkbox">
+                        </div>
+                        <div>
+                            <label for="exp-checkbox">COMM Experience</label>
+                            <input type="checkbox" name="h" id="exp-checkbox">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -162,51 +178,131 @@
         
         <h3>Preferred Class Times</h3>
         <div>
-            <label for="day">Days and times: </label>
-            <select id="day" name="day-1">
-                <option value="monwedfri">Mon/Wed/Fri</option>
-                <option value="monwed">Mon/Wed</option>
-                <option value="tuesthur">Tues/Thur</option>
-                <option value="mon">Mon</option>
-            </select>
-            <label for="time"></label>
-            <select id="time" name="timeslot-1">
-                <option value="1">8:00am - 8:50am</option>
-                <option value="2" hidden>8:00am - 9:15am</option>
-                <option value="3">9:05am - 9:55am</option>
-                <option value="4" hidden>9:05am - 10:20am</option>
-                <option value="5" hidden>9:30am - 10:45am</option>
-                <option value="6">10:10am - 11:00am</option>
-                <option value="7" hidden>10:10am - 11:25am</option>
-                <option value="8" hidden>11:00am - 12:15pm</option>
-                <option value="9">11:15am - 12:05pm</option>
-                <option value="10" hidden>11:15am - 12:30pm</option>
-                <option value="11">12:20pm - 1:10pm</option>
-                <option value="12" hidden>12:20pm - 1:35pm</option>
-                <option value="13" hidden>12:30pm - 1:45pm</option>
-                <option value="14">1:25pm - 2:15pm</option>
-                <option value="15" hidden>1:25pm - 2:40pm</option>
-                <option value="16" hidden>2:00pm - 3:15pm</option>
-                <option value="17" hidden>3:30pm - 4:45pm</option>
-                <option value="18" hidden>5:00pm - 6:15pm</option>S
-                <option value="19">5:45pm - 6:35pm</option>
-                <option value="20" hidden>5:45pm - 7:00pm</option>
-                <option value="21" hidden>2:45pm - 5:25pm</option>
-                <option value="22" hidden>5:45pm - 8:25pm</option>
-            </select>
-            <div>
-                <label for="recitation">Recitation?</label>
-                <input type="checkbox" name="recitation" id="recitation">
+            <label for="recitation">Will the course have a recitation?</label>
+            <input type="checkbox" name="recitation" id="recitation">
+        </div>
+        <div id="preferences">
+            <div id="preference-1" class="preference">
+                <button id="pref-remove-1" class="float-right-button" data-prefIndex="1">Remove</button>
+                <label for="day-1">Days and times: </label>
+                <select id="day-1" name="day-1" data-prefIndex="1">
+                    <option value="mon-wed-fri">Mon/Wed/Fri</option>
+                    <option value="mon-wed">Mon/Wed</option>
+                    <option value="tues-thur">Tues/Thur</option>
+                    <option value="mon">Mon</option>
+                    <option value="tues">Tues</option>
+                    <option value="wed">Wed</option>
+                    <option value="thur">Thur</option>
+                    <option value="fri">Fri</option>
+                </select>
+                <label for="time-1"></label>
+                <select id="time-1" name="time-1">
+                </select>
+                <div>
+                    <label for="other-time-1">Other days/times</label>
+                    <input type="checkbox" id="other-time-1" name="other-time-1" data-prefIndex="1">
+                </div>
+                <div id="other-time-fields-1">
+                    <label for="other-time-days-1" class="block-label">Days:</label>
+                    <div id="other-time-days-1">
+                        <input type="checkbox" id="other-mon-1" name="other-mon-1">
+                        <label for="other-mon-1">Monday</label>
+                        <input type="checkbox" id="other-tue-1" name="other-tue-1">
+                        <label for="other-tues-1">Tuesday</label>
+                        <input type="checkbox" id="other-wed-1" name="other-wed-1">
+                        <label for="other-wed-1">Wednesday</label>
+                        <input type="checkbox" id="other-thur-1" name="other-thur-1">
+                        <label for="other-thur-1">Thursday</label>
+                        <input type="checkbox" id="other-fri-1" name="other-fri-1">
+                        <label for="other-fri-1">Friday</label>
+                    </div>
+                    <label for="other-time-start-1">Start time:</label>
+                    <input type="time" id="other-time-start-1" name="other-time-start-1">
+                    <label for="other-time-end-1">End time:</label>
+                    <input type="time" id="other-time-end-1" name="other-time-end-1">
+                </div>
             </div>
-            <div>
-                <label for="other-time">Other days/times</label>
-                <input type="checkbox" id="other-time">
-                <label for="other-time-days">Days:</label>
-                <input type="text" id="other-time-days">
-                <label for="other-time-hours">Hours:</label>
-                <input type="text" id="other-time-hours">
+            <div id="preference-2" class="preference">
+                <button id="pref-remove-2" class="float-right-button" data-prefIndex="2">Remove</button>
+                <label for="day-2">Days and times: </label>
+                <select id="day-2" name="day-2" data-prefIndex="2">
+                    <option value="mon-wed-fri">Mon/Wed/Fri</option>
+                    <option value="mon-wed">Mon/Wed</option>
+                    <option value="tues-thur">Tues/Thur</option>
+                    <option value="mon">Mon</option>
+                    <option value="tues">Tues</option>
+                    <option value="wed">Wed</option>
+                    <option value="thur">Thur</option>
+                    <option value="fri">Fri</option>
+                </select>
+                <label for="time-2"></label>
+                <select id="time-2" name="time-2">
+                </select>
+                <div>
+                    <label for="other-time-2">Other days/times</label>
+                    <input type="checkbox" id="other-time-2" name="other-time-2" data-prefIndex="2">
+                </div>
+                <div id="other-time-fields-2">
+                    <label for="other-time-days-2" class="block-label">Days:</label>
+                    <div id="other-time-days-2">
+                        <input type="checkbox" id="other-mon-2" name="other-mon-2">
+                        <label for="other-mon-2">Monday</label>
+                        <input type="checkbox" id="other-tue-2" name="other-tue-2">
+                        <label for="other-tues-2">Tuesday</label>
+                        <input type="checkbox" id="other-wed-2" name="other-wed-2">
+                        <label for="other-wed-2">Wednesday</label>
+                        <input type="checkbox" id="other-thur-2" name="other-thur-2">
+                        <label for="other-thur-2">Thursday</label>
+                        <input type="checkbox" id="other-fri-2" name="other-fri-2">
+                        <label for="other-fri-2">Friday</label>
+                    </div>
+                    <label for="other-time-start-2">Start time:</label>
+                    <input type="time" id="other-time-start-2" name="other-time-start-2">
+                    <label for="other-time-end-2">End time:</label>
+                    <input type="time" id="other-time-end-2" name="other-time-end-2">
+                </div>
             </div>
-            <button id="add-pref-button">Add another day/time</button>
+            <div id="preference-3" class="preference">
+                <button id="pref-remove-3" class="float-right-button" data-prefIndex="3">Remove</button>
+                <label for="day-3">Days and times: </label>
+                <select id="day-3" name="day-3" data-prefIndex="3">
+                    <option value="mon-wed-fri">Mon/Wed/Fri</option>
+                    <option value="mon-wed">Mon/Wed</option>
+                    <option value="tues-thur">Tues/Thur</option>
+                    <option value="mon">Mon</option>
+                    <option value="tues">Tues</option>
+                    <option value="wed">Wed</option>
+                    <option value="thur">Thur</option>
+                    <option value="fri">Fri</option>
+                </select>
+                <label for="time-3"></label>
+                <select id="time-3" name="time-3">
+                </select>
+                <div>
+                    <label for="other-time-3">Other days/times</label>
+                    <input type="checkbox" id="other-time-3" name="other-time-3" data-prefIndex="3">
+                </div>
+                <div id="other-time-fields-3">
+                    <label for="other-time-days-3" class="block-label">Days:</label>
+                    <div id="other-time-days-3">
+                        <input type="checkbox" id="other-mon-3" name="other-mon-3">
+                        <label for="other-mon-3">Monday</label>
+                        <input type="checkbox" id="other-tue-3" name="other-tue-3">
+                        <label for="other-tues-3">Tuesday</label>
+                        <input type="checkbox" id="other-wed-3" name="other-wed-3">
+                        <label for="other-wed-3">Wednesday</label>
+                        <input type="checkbox" id="other-thur-3" name="other-thur-3">
+                        <label for="other-thur-3">Thursday</label>
+                        <input type="checkbox" id="other-fri-3" name="other-fri-3">
+                        <label for="other-fri-3">Friday</label>
+                    </div>
+                    <label for="other-time-start-3">Start time:</label>
+                    <input type="time" id="other-time-start-3" name="other-time-start-3">
+                    <label for="other-time-end-3">End time:</label>
+                    <input type="time" id="other-time-end-3" name="other-time-end-3">
+                </div>
+            </div>
+            <button id="add-pref-button">Add alternate day/time</button>
         </div>
 
         <h3>Enrollment Restrictions</h3>

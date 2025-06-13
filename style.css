@@ -34,6 +34,17 @@ textarea{
     width: 75%;
 }
 
+.preference{
+    background-color:#c7e6fb;
+    border-radius: 5px;
+    margin: 10px;
+    padding: 10px;
+}
+
+.float-right-button{
+    float: right;
+}
+
 .form-nav{
     padding: 10px;
     display: flex;
@@ -76,6 +87,11 @@ textarea{
 
 .inline-label{
     display: inline-block;
+    vertical-align: top;
+}
+
+.block-label{
+    display: block;
 }
 
 .form-section{
@@ -88,7 +104,7 @@ textarea{
 }
 
 .selected{
-    background-color: #5288d8;
+    background-color:#c7e6fb;
 }
 
 .satisfied{
@@ -97,4 +113,15 @@ textarea{
 
 .tbd {
     background-color: orange;
+}
+
+.course-row{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    column-gap: 15px;
+}
+
+.course-container{
+    width: 90vw;
 }

@@ -6,16 +6,11 @@ let calendar;
 let events = [];
 let resources = [];
 const units = ["Rhetoric", "Interpersonal and Organizational Communication", "Performance Studies", "Media and Technology Studies", "Media Arts"];
-const dayStr = new Map([["monwedfri", "Mon/Wed/Fri"], ["monwed", "Mon/Wed"], ["tuesthur", "Tues/Thur"], ["mon", "Mon"]]);
-const timeStr = new Map([["1", "8:00am - 8:50am"], ["2", "8:00am - 9:15am"], ["3", "9:05am - 9:55am"], ["4", "9:05am - 10:20am"], ["5", "9:30am - 10:45am"], ["6", "10:10am - 11:00am"],
-["7", "10:10am - 11:25am"], ["8", "11:00am - 12:15pm"], ["9","11:15am - 12:05pm"],
-["10", "11:15am - 12:30pm"], ["11", "12:20pm - 1:10pm"], ["12", "12:20pm - 1:35pm"], ["13", "12:30pm - 1:45pm"],
-["14", "1:25pm - 2:15pm"], ["15", "1:25pm - 2:40pm"], ["16", "2:00pm - 3:15pm"], ["17", "3:30pm - 4:45pm"],
-["18", "5:00pm - 6:15pm"], ["19", "5:45pm - 6:35pm"], ["20", "5:45pm - 7:00pm"]]);
 const pathways = {cel: "Communication and Everyday Life", mapc: "Media Arts, Performance, and Critical Practice",
-    mtpc: "Media Technologies and Public Culture", ocw: "Organization, Communication, and Work", raa: "Rhetoric, Activism, and Advocacy"};
+    mtpc: "Media Technologies and Public Culture", ocw: "Organization, Communication, and Work", raa: "Rhetoric, Activism, and Advocacy",
+moi: "Modes of Inquiry", rid: "Representation, Identity, and Difference"};
 const WEEK = "2025-08-0";
-const DAYS = {sun: "3", mon: "4", tue: "5", wed: "6", thur: "7", fri: "8", sat: "9"};
+const DAYS = {sun: "3", mon: "4", tues: "5", wed: "6", thur: "7", fri: "8", sat: "9"};
 const dropdown = document.getElementById("filter-select");
 const checklist_section = document.getElementById("checklists");
 const requirements = new Map([["FY_SEMINAR", ["First-year Seminar Courses", 1]], ["COMMBEYOND", ["Communication Beyond Carolina", 5]],
@@ -123,6 +118,7 @@ function generateUnitChecklist(unit){
         seats.classList.add("satisfied");
     }
     parent.appendChild(seats);
+
     for (const field of requirements.keys()){
         let details = document.createElement("details");
         let summary = document.createElement("summary");
@@ -168,11 +164,19 @@ function getSatisfyingCourses(criterion, unit){
         });
     }
     else{
-        courses.forEach(course => {
-            if (courseNumberToObject(course.number)[criterion] === true){
+        for (const course of courses){
+            if (courseNumIsSpecialTopics(course.number)){
+                if (course.pathways.includes(criterion)){
+                    satisfying_courses.push(course);
+                }
+                else{
+                    continue;
+                }
+            }
+            else if (courseNumberToObject(course.number)[criterion] === true){
                 satisfying_courses.push(course);
             }
-        });
+        }
     }
     return satisfying_courses;
 }
@@ -216,61 +220,87 @@ function generateFacultyList(){
 
 function generateCourseList(){
     const course_list = document.getElementById("courses");
+    let i = 0;
     for (const course of courseOfferings){
         let container = document.createElement("div");
+        container.classList.add('course-container');
+
+        let edit_button = document.createElement("button");
+        edit_button.innerText = "Edit"
+        edit_button.classList.add("float-right-button");
+        edit_button.dataset.cid = course.id;
+        edit_button.addEventListener("click", handleEditCourse);
+        container.appendChild(edit_button);
+
         let title = document.createElement("b");
         title.innerText = "COMM " + course.number + " - " + course.instructor
-        let text = document.createElement("ul");
 
-        if(typeof(course.name) === 'string' && course.name.length != 0){
-            let name = document.createElement("li");
-            name.innerText = "Title: " + course.name;
-            text.appendChild(name);
-            let description = document.createElement("p");
-            description.innerText = "Description: " + course.description;
-            text.appendChild(description);
+        let row1 = document.createElement("div");
+        row1.classList.add("course-row");
+
+        let prefContainer = document.createElement("ol");
+        for (const time of course.day_time){
+            let time_div = document.createElement("li");
+            time_div.innerText = daysToString(time.day) + " " + timeslotToString(time.time);
+            prefContainer.appendChild(time_div);
         }
+
+        row1.appendChild(prefContainer);
+
+        let row2 = document.createElement("div");
+        row2.classList.add("course-row");
+        let unit_div = document.createElement("div");
+        unit_div.innerText = "Unit: " + course.unit;
+        let recitation = document.createElement("div");
+        recitation.innerText = "Recitation: " + boolToEng(course.recitation);
+        let enrollment = document.createElement("div");
+        enrollment.innerText = "Enrollment: " + course.enrollment;
+        let crosslisted = document.createElement("div");
+        crosslisted.innerText = "Crosslisted: " + course.crosslisted;
+        let TAs = document.createElement("div");
+        TAs.innerText = "TAs requested: " + course.numTA;
+        let service = document.createElement("div");
+        service.innerText = "Service component: " + boolToEng(course.service_rec);
+        let year = document.createElement("div");
+        year.innerText = "Year restriction: " + course.year_res;
+        let major = document.createElement("div");
+        major.innerText = "Major restriction: " + boolToEng(course.major_res);
+        let classroom = document.createElement("div");
+        classroom.innerText = "Classroom requirement: " + course.classroom_select + ", " + course.classroom;
+        row2.appendChild(unit_div);
+        row2.appendChild(recitation);
+        row2.appendChild(enrollment);
+        row2.appendChild(crosslisted);
+        row2.appendChild(TAs);
+        row2.appendChild(service);
+        row2.appendChild(year);
+        row2.appendChild(major);
+        row2.appendChild(classroom);
+
+        container.appendChild(title);
+        container.appendChild(row1);
+        container.appendChild(row2);
 
         if(courseNumIsSpecialTopics(course.number)){
-            let pathwaysli = document.createElement("li");
-            pathwaysli.innerText = "Pathways: ";
-            const paths = Object.keys(pathways);
-            for (let i = 0; i < paths.length; i++){
-                if (course.pathways[i]){
-                    pathwaysli.innerText += pathways[paths[i]] + "; ";
-                }
+            let row3 = document.createElement("div");
+            row3.classList.add("course-row");
+
+            let name = document.createElement("div");
+            name.innerText = "Title: " + course.name;
+            row3.appendChild(name);
+
+            let pathways_div = document.createElement("div");
+            pathways_div.innerText = "Pathways: ";
+            for ( const path of course.pathways){
+                pathways_div.innerText += pathways[path] + "; ";
             }
-            text.appendChild(pathwaysli);
+            row3.appendChild(pathways_div);
+
+            let description = document.createElement("div");
+            description.innerText = "Description: " + course.description;
+            container.appendChild(row3);
+            container.appendChild(description);
         }
-
-        let time = document.createElement("li");
-        time.innerText = dayStr.get(course.day_time[0].day) + " " + timeslotToString(course.day_time[0].time);
-        let enrollment = document.createElement("li");
-        enrollment.innerText = "Enrollment: " + course.enrollment;
-        let crosslisted = document.createElement("li");
-        crosslisted.innerText = "Crosslisted: " + course.crosslisted;
-        let TAs = document.createElement("li");
-        TAs.innerText = "TAs requested: " + course.numTA;
-        let service = document.createElement("li");
-        service.innerText = "Service component: " + boolToEng(course.service_rec);
-        let year = document.createElement("li");
-        year.innerText = "Year restriction: " + course.year_res;
-        let major = document.createElement("li");
-        major.innerText = "Major restriction: " + boolToEng(course.major_res);
-        let classroom = document.createElement("li");
-        classroom.innerText = "Classroom requirement: " + course.classroom;
-
-
-        text.appendChild(time);
-        text.appendChild(enrollment);
-        text.appendChild(crosslisted);
-        text.appendChild(TAs);
-        text.appendChild(service);
-        text.appendChild(year);
-        text.appendChild(major);
-        text.appendChild(classroom);
-        container.appendChild(title);
-        container.appendChild(text);
 
         course_list.appendChild(container);
 
@@ -282,6 +312,8 @@ function generateCourseList(){
                 return "No";
             }
         }
+
+        i++;
     }
 }
 
@@ -295,6 +327,16 @@ function timeslotToString(timeslot){
     hour = hour % 12 || 12;
     const endStr =  `${hour}:${minute.toString().padStart(2, '0')}${ampm}`;
     return startStr + " - " + endStr;
+}
+
+function daysToString(days){
+    let rv = "";
+    for (let day of days){
+        day = day.charAt(0).toUpperCase() + day.slice(1);
+        rv += (day + "/");
+    }
+    rv = rv.slice(0, -1);
+    return rv;
 }
 
 function courseNumIsSpecialTopics(number){
@@ -312,25 +354,10 @@ function parseCoursesToEvents(course){
     rv.title = "COMM " + course.number + " " + course.instructor;
     
     let daysofweek = [];
-    switch (course.day_time[0].day){
-        case "monwedfri":
-            daysofweek.push(DAYS.mon);
-            daysofweek.push(DAYS.wed);
-            if (!course.recitation){
-                daysofweek.push(DAYS.fri);
-            }
-            break;
-        case "monwed":
-            daysofweek.push(DAYS.mon);
-            daysofweek.push(DAYS.wed);
-            break;
-        case "tuesthur":
-            daysofweek.push(DAYS.tue);
-            daysofweek.push(DAYS.thur);
-            break;
-        case "mon":
-            daysofweek.push(DAYS.mon);
-            break;
+    for (const day of course.day_time[0].day){
+        if (!(course.recitation && day === "fri")){
+            daysofweek.push(DAYS[day]);   
+        }
     }
     let timestart = course.day_time[0].time.start;
     let timeend = course.day_time[0].time.end;
@@ -365,6 +392,13 @@ function getCourseReqs(course){
     return rv;
 }
 
+function handleEditCourse(event){
+    //pass id
+    let course_edit = JSON.stringify(courseOfferings.find(course => course.id === event.target.dataset.cid));
+    localStorage.setItem("coursesToEdit", course_edit);
+    location.href = './index.html';
+}
+
 function initializeSchedule(){
     const schedule = document.getElementById("schedule");
     calendar = new EventCalendar(schedule, {
@@ -385,7 +419,7 @@ function initializeSchedule(){
     dayHeaderFormat: { weekday: 'short' },
     date: "2025-08-03",
     slotMinTime: '07:00:00',
-    slotMaxTime: '19:00:00',
+    slotMaxTime: '21:00:00',
     slotEventOverlap: false,
     allDaySlot: false,
     events: events
@@ -443,7 +477,7 @@ function handleClearFilter(){
 function generateDocument(){
     let header = document.createElement("p");
     let iframe = document.getElementById("print-content");
-    test.innerText = "test";
+    header.innerText = "test";
     const doc = iframe.contentWindow.document;
     doc.open();
     doc.write(`<!DOCTYPE html>
@@ -457,7 +491,7 @@ function generateDocument(){
         </html>`);
     doc.close();
     
-        doc.body.appendChild(test);
+        doc.body.appendChild(header);
         iframe.contentWindow.focus();
         iframe.contentWindow.print();
 
