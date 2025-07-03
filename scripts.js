@@ -270,9 +270,14 @@ function generateEventListeners(){
 //END EVENT LISTENERS
 
 function restoreData(){
+    //in the event that a course edit button is hit
     if (localStorage.getItem("coursesToEdit")){
         courseOfferings = JSON.parse(localStorage.getItem("courses"));
         parseCoursesToFormData(JSON.parse(localStorage.getItem("coursesToEdit")));
+    }
+    //in the event that the index page is revisted with course data but a specific edit is not requested
+    if (localStorage.getItem("courses")){
+        //not sure yet
     }
 }
 
@@ -623,7 +628,7 @@ function handleSubmit(event){
         
         //Save to localStorage
         localStorage.setItem('courses', JSON.stringify(courseOfferings));
-        localStorage.setItem('coursesToEdit', null);
+        localStorage.removeItem('coursesToEdit');
         location.href = './summary.html';
     }
     
