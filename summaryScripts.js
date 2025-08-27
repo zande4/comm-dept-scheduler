@@ -18,7 +18,7 @@ const requirements = new Map([["FY_SEMINAR", ["First-year Seminar Courses", 1]],
     ["lower", ["Lower Level Courses", 2]], ["upper", ["Upper Level Courses", 4]], ["cel", ["Communication and Everyday Life", 1]],
     ["mapc", ["Media Arts, Performance, and Critical Practice", 1]], ["mtpc", ["Media Technologies and Public Culture", 1]],
     ["ocw", ["Organization, Communication, and Work", 1]], ["raa", ["Rhetoric, Activism, and Advocacy", 1]], ["h", ["COMM Experience", 1]]]);
-
+const unit_colors = {rhetoric: "#FF5C5C", ioc: "#8275BD", performance: "#E7853A", mediatech: "#90A959", mediaart: "#47A4D3"};
 document.addEventListener('DOMContentLoaded', () => {
     parseCSV(() => {
         showOutput();
@@ -59,7 +59,7 @@ function showOutput(){
 }
 
 function restoreData(){
-    courseOfferings = JSON.parse(localStorage.getItem('courses'));
+    courseOfferings = JSON.parse(sessionStorage.getItem('courses'));
 }
 
 function createEventListeners(){
@@ -71,6 +71,9 @@ function createEventListeners(){
     document.getElementById("clear-filter-button").addEventListener("click", handleClearFilter);
     document.getElementById("summary").addEventListener("click", generateDocument);
     document.getElementById("export").addEventListener("click", exportData);
+
+    const color_toggle = document.getElementById("color-toggle");
+    color_toggle.addEventListener("change", handleColorCodeToggle);
 }
 
 function getCourseObjects(){
@@ -117,7 +120,7 @@ function generateUnitChecklist(unit){
     if (num_seats > 100){
         seats.classList.add("satisfied");
     }
-    parent.appendChild(seats);
+    //parent.appendChild(seats);
 
     for (const field of requirements.keys()){
         let details = document.createElement("details");
@@ -226,11 +229,21 @@ function generateCourseList(){
         container.classList.add('course-container');
 
         let edit_button = document.createElement("button");
-        edit_button.innerText = "Edit"
-        edit_button.classList.add("float-right-button");
+        edit_button.innerText = "Edit";
         edit_button.dataset.cid = course.id;
         edit_button.addEventListener("click", handleEditCourse);
-        container.appendChild(edit_button);
+
+        let delete_button = document.createElement("button");
+        delete_button.innerText = "Delete";
+        delete_button.dataset.cid = course.id;
+        delete_button.addEventListener("click", handleDeleteCourse);
+
+        let floating_container = document.createElement("div");
+        floating_container.classList.add("float-right-container");
+        floating_container.appendChild(edit_button);
+        floating_container.appendChild(delete_button);
+
+        container.appendChild(floating_container);
 
         let title = document.createElement("b");
         title.innerText = "COMM " + course.number + " - " + course.instructor
@@ -239,10 +252,15 @@ function generateCourseList(){
         row1.classList.add("course-row");
 
         let prefContainer = document.createElement("ol");
+        let i = 0;
         for (const time of course.day_time){
             let time_div = document.createElement("li");
             time_div.innerText = daysToString(time.day) + " " + timeslotToString(time.time);
+            time_div.dataset.cid = course.id;
+            time_div.dataset.timeslot = i;
+            time_div.addEventListener("click", handleChangeSelectedTime);
             prefContainer.appendChild(time_div);
+            i++;
         }
 
         row1.appendChild(prefContainer);
@@ -354,13 +372,13 @@ function parseCoursesToEvents(course){
     rv.title = "COMM " + course.number + " " + course.instructor;
     
     let daysofweek = [];
-    for (const day of course.day_time[0].day){
+    for (const day of course.day_time[course.selected_time].day){
         if (!(course.recitation && day === "fri")){
             daysofweek.push(DAYS[day]);   
         }
     }
-    let timestart = course.day_time[0].time.start;
-    let timeend = course.day_time[0].time.end;
+    let timestart = course.day_time[course.selected_time].time.start;
+    let timeend = course.day_time[course.selected_time].time.end;
     
     daysofweek.forEach(day => {
         rv.start = WEEK + day + " " + timestart;
@@ -392,11 +410,55 @@ function getCourseReqs(course){
     return rv;
 }
 
+function getCourseOfferingFromCid(cid){
+    return courseOfferings.find(course => course.id === cid);
+}
+
 function handleEditCourse(event){
     //pass id
-    let course_edit = JSON.stringify(courseOfferings.find(course => course.id === event.target.dataset.cid));
-    localStorage.setItem("coursesToEdit", course_edit);
+    let course_edit = JSON.stringify(getCourseOfferingFromCid(event.target.dataset.cid));
+    sessionStorage.setItem("coursesToEdit", course_edit);
     location.href = './index.html';
+}
+
+function handleChangeSelectedTime(event){
+    tar = event.target;
+    const cid = tar.dataset.cid;
+    const timeslotIndex = tar.dataset.timeslot;
+
+    tar.classList.add("selected");
+    const siblings = [...tar.parentElement.children].filter(sib => sib !== tar);
+    for (s of siblings){
+        s.classList.remove("selected");
+    }
+
+    const course = getCourseOfferingFromCid(cid);
+    course.selected_time = timeslotIndex;
+    events = [];
+    for (c of courseOfferings){
+        parseCoursesToEvents(c);
+    }
+    calendar.setOption("events", events);
+}
+
+function handleDeleteCourse(event){
+    if (!confirm("Delete course?")) {
+        return;
+    }
+    courseOfferings.pop(getCourseOfferingFromCid(event.target.dataset.cid));
+    event.target.parentElement.parentElement.innerHTML = "";
+    events = [];
+    courseOfferings.forEach(course => {
+        parseCoursesToEvents(course);
+    });
+    calendar.setOption("events", events);
+    //calendar.refetchEvents();
+    console.log(courseOfferings);
+    console.log(events);
+}
+
+function handleColorCodeToggle(){
+    calendar.refetchEvents();
 }
 
 function initializeSchedule(){
@@ -422,7 +484,39 @@ function initializeSchedule(){
     slotMaxTime: '21:00:00',
     slotEventOverlap: false,
     allDaySlot: false,
-    events: events
+    events: events,
+    eventClassNames(info) {
+        try{
+            if (document.getElementById("color-toggle").checked){
+                let u = info.event.resourceIds[info.event.resourceIds.length - 1];
+                switch (u){
+                    case "Rhetoric":
+                        u = "color-rhetoric";
+                        break;
+                    case "Interpersonal and Organizational Communication":
+                        u = "color-ioc";
+                        break;
+                    case "Performance Studies":
+                        u = "color-performance";
+                        break;
+                    case "Media and Technology Studies":
+                        u = "color-mediatech"
+                        break;
+                    case "Media Arts":
+                        u = "color-mediaart"
+                        break;
+                }
+                return [u];
+            }
+            else{
+                return [];
+            }
+        }
+        catch (err) {
+            console.error('eventClassNames error', err);
+            return [];
+        }
+    }
     });
 }
 
@@ -477,7 +571,7 @@ function handleClearFilter(){
 function generateDocument(){
     let header = document.createElement("p");
     let iframe = document.getElementById("print-content");
-    header.innerText = "test";
+    header.innerText = "test - This feature is still in progress";
     const doc = iframe.contentWindow.document;
     doc.open();
     doc.write(`<!DOCTYPE html>
@@ -504,4 +598,35 @@ function exportData(){
     a.href = url;
     a.download = "course-offering-export.json";
     a.click();
+}
+
+function isConflictingClassroomUsage(){
+    let classSortedCourses = new Map();
+    let classroom;
+    //sort all course offerings by classroom
+    for(const course of courseOfferings){
+        classroom = course.classroom_select;
+        if (classroom && classSortedCourses.has(classroom)){
+            classSortedCourses.getValue(classroom).push(course);
+        }
+        else if (classroom){
+            classSortedCourses.setValue(classroom, []);
+        }
+    }
+    //check if any of the course offerings within a classroom group have overlapping times
+    for (const cr of classSortedCourses.keys()){
+        const courses = classSortedCourses.getValue(cr);
+        for (let i = 0; i < courses.length; i++){
+            for (let j = 0; j < courses.length; j++){
+                if (i != j && !(parseTimeToMinutes(courses[i].day_time[courses[i].selected_time].time.end) < courses)){
+
+                }
+            }
+        }
+    }
+}
+
+function parseTimeToMinutes(timeStr) {
+    const [hours, minutes] = timeStr.split(":").map(Number);
+    return hours * 60 + minutes;
 }

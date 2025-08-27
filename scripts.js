@@ -40,6 +40,7 @@ class CourseOffering {
         this.crosslisted = crosslisted;
         this.numTA = numTA;
         this.day_time = day_time;
+        this.selected_time = 0;
         this.recitation = recitation;
         this.service_rec = service_rec;
         this.year_res = year_res;
@@ -219,9 +220,6 @@ function generateEventListeners(){
         document.getElementById(`other-time-${i}`).addEventListener("change", handleOtherTimeToggle);
         document.getElementById(`pref-remove-${i}`).addEventListener("click", handleRemovePreference);
     }
-    const other_time = document.getElementById("other-time");
-    const other_time_days = document.getElementById("other-time-days");
-    const other_time_fields = document.getElementById("other-time-fields");
     const num_radio = document.getElementById("number-select");
     const search = document.getElementById("course-search");
     const special = document.getElementById("special-topics-fields");
@@ -244,10 +242,10 @@ function generateEventListeners(){
     const pref_button = document.getElementById("add-pref-button");
     pref_button.addEventListener("click", handleAddPreference);
 
-    next_button.style.display = "none";
+    next_button.style.visibility = "hidden";
     next_button.addEventListener("click", handleNext);
 
-    back_button.style.display = "none";
+    back_button.style.visibility = "hidden";
     back_button.addEventListener("click", handleBack);
 
     add_button.addEventListener("click", handleAddCourse);
@@ -271,12 +269,12 @@ function generateEventListeners(){
 
 function restoreData(){
     //in the event that a course edit button is hit
-    if (localStorage.getItem("coursesToEdit")){
-        courseOfferings = JSON.parse(localStorage.getItem("courses"));
-        parseCoursesToFormData(JSON.parse(localStorage.getItem("coursesToEdit")));
+    if (sessionStorage.getItem("coursesToEdit")){
+        courseOfferings = JSON.parse(sessionStorage.getItem("courses"));
+        parseCoursesToFormData(JSON.parse(sessionStorage.getItem("coursesToEdit")));
     }
     //in the event that the index page is revisted with course data but a specific edit is not requested
-    if (localStorage.getItem("courses")){
+    if (sessionStorage.getItem("courses")){
         //not sure yet
     }
 }
@@ -409,8 +407,8 @@ function createCourseOffering(index){
     }
 
     let cid = "";
-    if (localStorage.getItem('coursesToEdit')){
-        cid = JSON.parse(localStorage.getItem('coursesToEdit')).id;
+    if (sessionStorage.getItem('coursesToEdit')){
+        cid = JSON.parse(sessionStorage.getItem('coursesToEdit')).id;
     }
     else{
         cid = crypto.randomUUID();
@@ -449,31 +447,33 @@ function courseNumberToObject(number){
 
 function handleNext(event){
     event.preventDefault();
+    validateManualTime();
     if (form.reportValidity()){
         const pref = formData[currentCourse].get("numPreferences");
         formData[currentCourse] = (new FormData(form));
         formData[currentCourse].set("numPreferences", pref);
         currentCourse++;
         if(currentCourse == (formData.length - 1)){
-            next_button.style.display = "none";
+            next_button.style.visibility = "hidden";
             add_button.style.visibility = "visible";
         }
-        back_button.style.removeProperty("display");
+        back_button.style.visibility = "visible";
         renderForm();
     }
 }
 
 function handleBack(event){
     event.preventDefault();
+    validateManualTime();
     if (form.reportValidity()){
         const pref = formData[currentCourse].get("numPreferences");
         formData[currentCourse] = (new FormData(form));
         formData[currentCourse].set("numPreferences", pref);
         add_button.style.visibility = "hidden";
-        next_button.style.removeProperty('display');
+        next_button.style.visibility = "visible";
         currentCourse--;
         if(currentCourse == 0){
-            back_button.style.display = "none";
+            back_button.style.visibility = "hidden";
         }
         renderForm();
     }
@@ -482,7 +482,7 @@ function handleBack(event){
 function handleAddCourse(event){
     event.preventDefault();
     if (form.reportValidity()){
-        back_button.style.removeProperty("display");
+        back_button.style.visibility = "visible";
         delete_button.style.visibility = "visible";
         const pref = formData[currentCourse].get("numPreferences");
         formData[currentCourse] = (new FormData(form));
@@ -493,13 +493,20 @@ function handleAddCourse(event){
 }
 
 function handleDeleteCourse(event){
+    if (!confirm("Delete course?")) {
+        return;
+    }
     event.preventDefault();
+
     formData.splice(currentCourse, 1);
     if (formData.length <= 1){
         delete_button.style.visibility = "hidden";
     }
     if (formData.length === currentCourse){
         currentCourse--;
+    }
+    if (currentCourse === 0){
+        back_button.style.visibility = "hidden";
     }
     renderForm();
 }
@@ -553,12 +560,12 @@ function handleCourseNumChange(){
     }
     else{
         //show requirements satisfied
+        reqs_list.innerText = "Requirements satisfied: ";
         document.getElementById("title").required = false;
         document.getElementById("description").required = false;
         if (document.getElementById("special-topic").checked){
             const clickEvent = new MouseEvent('click');
             document.getElementById("number-select").dispatchEvent(clickEvent);
-            reqs_list.innerText = "Requirements satisfied: ";
         }
         const reqs = getReqsListFromCourseNum(course_number.value);
         reqs.forEach (req => {
@@ -566,9 +573,6 @@ function handleCourseNumChange(){
         });
     }
     course_number.reportValidity();
-
-
-    
 }
 
 function getReqsListFromCourseNum(number){
@@ -613,22 +617,23 @@ function handleClassroomNeededToggle(event){
 function handleSubmit(event){
     //get all field values and create CourseOffering object
     event.preventDefault();
+    validateManualTime();
     if (form.reportValidity()){
         const pref = formData[currentCourse].get("numPreferences");
         formData[currentCourse] = (new FormData(form));
         formData[currentCourse].set("numPreferences", pref);
-        if (localStorage.getItem("coursesToEdit") === null){
+        if (sessionStorage.getItem("coursesToEdit") === null){
             for (let i = 0; i < formData.length; i++){
                 courseOfferings.push(createCourseOffering(i));
             }
         }
         else{
-            courseOfferings[courseOfferings.findIndex(c => c.id === JSON.parse(localStorage.getItem("coursesToEdit")).id)] = createCourseOffering(currentCourse);
+            courseOfferings[courseOfferings.findIndex(c => c.id === JSON.parse(sessionStorage.getItem("coursesToEdit")).id)] = createCourseOffering(currentCourse);
         }
         
-        //Save to localStorage
-        localStorage.setItem('courses', JSON.stringify(courseOfferings));
-        localStorage.removeItem('coursesToEdit');
+        //Save to sessionStorage
+        sessionStorage.setItem('courses', JSON.stringify(courseOfferings));
+        sessionStorage.removeItem('coursesToEdit');
         location.href = './summary.html';
     }
     
@@ -640,10 +645,14 @@ function handleOtherTimeToggle(event){
         document.getElementById(`day-${i}`).classList.add("grayed-out");
         document.getElementById(`time-${i}`).classList.add("grayed-out");
         document.getElementById(`other-time-fields-${i}`).style.removeProperty("display");
+        document.getElementById(`other-time-start-${i}`).required = true;
+        document.getElementById(`other-time-end-${i}`).required = true;
     }
     else{
         document.getElementById(`day-${i}`).classList.remove("grayed-out");
         document.getElementById(`time-${i}`).classList.remove("grayed-out");
+        document.getElementById(`other-time-start-${i}`).required = false;
+        document.getElementById(`other-time-end-${i}`).required = false;
         document.getElementById(`other-time-fields-${i}`).style.display = "none";
     }
 }
@@ -709,15 +718,58 @@ function handleImport(event){
     const files = event.target.files;
     if (!files || files.length === 0) return;
 
+    courseOfferings = [];
     for(const file of files){
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                courseOfferings.push(...JSON.parse(e.target.result));
-            } catch (err) {
-                console.error("Invalid JSON file:", err);
-            }
-        };
-        reader.readAsText(file);
+        if (file.type === "application/json"){
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    courseOfferings.push(...JSON.parse(e.target.result));
+                } catch (err) {
+                    console.error("Invalid JSON file:", err);
+                }
+            };
+            reader.readAsText(file);   
+        }
     }
+}
+
+function validateManualTime(){
+    for (let i = 1; i <= 3; i++){
+        if (document.getElementById(`other-time-${i}`).checked){
+            const start = document.getElementById(`other-time-start-${i}`);
+            const end = document.getElementById(`other-time-end-${i}`);
+            const manDays = document.getElementById(`other-time-days-${i}`).getElementsByTagName("input");
+            manDays[0].setCustomValidity("");
+            let isDaysEmpty = true; 
+            for (d of manDays){
+                if (d.checked){
+                    isDaysEmpty = false;
+                }
+            }
+            if (isDaysEmpty){
+                manDays[0].setCustomValidity("please select the days of the week the course will be held");
+            }
+            start.setCustomValidity("");
+            end.setCustomValidity("");
+            /*if (end.value = ""){
+                end.setCustomValidity("please enter an end time");
+            }
+            if (start.value = ""){
+                start.setCustomValidity("please enter a start time");        
+            }*/
+            if (parseTimeToMinutes(start.value) >= parseTimeToMinutes(end.value)){
+                console.log(start.value);
+                console.log(end.value);
+                start.setCustomValidity("start time cannot be later than end time");
+                start.reportValidity;
+                end.reportValidity;
+            }
+        }
+    }
+}
+
+function parseTimeToMinutes(timeStr) {
+    const [hours, minutes] = timeStr.split(":").map(Number);
+    return hours * 60 + minutes;
 }

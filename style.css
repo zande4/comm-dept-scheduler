@@ -12,6 +12,10 @@ table{
     border: 1px solid;
 }
 
+button, input[type="submit"]{
+    margin: 10px;
+}
+
 td{
     padding: 7px;
 }
@@ -41,7 +45,7 @@ textarea{
     padding: 10px;
 }
 
-.float-right-button{
+.float-right-container{
     float: right;
 }
 
@@ -64,6 +68,10 @@ textarea{
 .aligned-inputs{
     display: grid;
     grid-template-columns: 1fr 1fr
+}
+
+.spaced{
+    margin: 10px;
 }
 
 .left-aligned{
@@ -124,4 +132,30 @@ textarea{
 
 .course-container{
     width: 90vw;
+}
+
+.ec-today {
+  background-color: transparent !important;
+  background-color: inherit !important;
+  color: inherit !important;
+}
+
+.color-rhetoric{
+    background-color: #FF5C5C !important;
+}
+
+.color-ioc{
+    background-color: #8275BD;
+}
+
+.color-performance{
+    background-color: #E7853A;
+}
+
+.color-mediatech{
+    background-color: #90A959;
+}
+
+.color-mediaart{
+    background-color: #47A4D3;
 }
