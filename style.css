@@ -8,15 +8,35 @@ body{
     background-color: #4B9CD3;
 }
 
+.light-bg{
+    background-color: white;
+    padding: 15px;
+    border-radius: 5px;
+    margin: 15px;
+}
+
+.medium-bg{
+    background-color: #c7e6fb;
+}
+
+.centered-div{
+    width: 75vw;
+    margin: 15px 12vw;
+    padding: 15px;
+    border-radius: 5px;
+}
+
 table{
     border: 1px solid;
+    width: max-content;
 }
 
 button, input[type="submit"]{
     margin: 10px;
 }
 
-td{
+th, td{
+    text-align: left;
     padding: 7px;
 }
 
@@ -111,6 +131,10 @@ textarea{
   pointer-events: none;
 }
 
+.grayed-out-text{
+    color: #888888;
+}
+
 .selected{
     background-color:#c7e6fb;
 }
@@ -132,6 +156,7 @@ textarea{
 
 .course-container{
     width: 90vw;
+    padding: 10px;
 }
 
 .ec-today {
@@ -145,17 +170,17 @@ textarea{
 }
 
 .color-ioc{
-    background-color: #8275BD;
+    background-color: #8275BD !important;
 }
 
 .color-performance{
-    background-color: #E7853A;
+    background-color: #E7853A !important;
 }
 
 .color-mediatech{
-    background-color: #90A959;
+    background-color: #90A959 !important;
 }
 
 .color-mediaart{
-    background-color: #47A4D3;
+    background-color: #47A4D3 !important;
 }

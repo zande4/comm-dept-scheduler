@@ -227,6 +227,9 @@ function generateCourseList(){
     for (const course of courseOfferings){
         let container = document.createElement("div");
         container.classList.add('course-container');
+        if (i % 2 === 0){
+            container.classList.add('medium-bg');
+        }
 
         let edit_button = document.createElement("button");
         edit_button.innerText = "Edit";
@@ -252,15 +255,15 @@ function generateCourseList(){
         row1.classList.add("course-row");
 
         let prefContainer = document.createElement("ol");
-        let i = 0;
+        let j = 0;
         for (const time of course.day_time){
             let time_div = document.createElement("li");
             time_div.innerText = daysToString(time.day) + " " + timeslotToString(time.time);
             time_div.dataset.cid = course.id;
-            time_div.dataset.timeslot = i;
+            time_div.dataset.timeslot = j;
             time_div.addEventListener("click", handleChangeSelectedTime);
             prefContainer.appendChild(time_div);
-            i++;
+            j++;
         }
 
         row1.appendChild(prefContainer);
@@ -601,8 +604,10 @@ function exportData(){
 }
 
 function isConflictingClassroomUsage(){
+    //returns false if no conflicting usage, returns an array of conflicting CourseOffering pairs otherwise
     let classSortedCourses = new Map();
     let classroom;
+    let rv = [];
     //sort all course offerings by classroom
     for(const course of courseOfferings){
         classroom = course.classroom_select;
@@ -618,11 +623,25 @@ function isConflictingClassroomUsage(){
         const courses = classSortedCourses.getValue(cr);
         for (let i = 0; i < courses.length; i++){
             for (let j = 0; j < courses.length; j++){
-                if (i != j && !(parseTimeToMinutes(courses[i].day_time[courses[i].selected_time].time.end) < courses)){
-
+                let iEnd = parseTimeToMinutes(courses[i].day_time[courses[i].selected_time].time.end);
+                let jStart = parseTimeToMinutes(courses[j].day_time[courses[j].selected_time].time.start);
+                if (i != j && !(iEnd < jStart)){
+                    rv.push([courses[i], courses[j]]);
                 }
             }
         }
+    }
+
+    return rv;
+}
+
+function classroomOverlapToString(overlapArray){
+    //given the array returned by isConflictingClassroomUsage will generate an array of conflict error messages;
+    rv = [];
+    for (const classroom of overlapArray){
+        let c1 = "COMM" + classroom[0].number;
+        let c2 = "COMM" + classroom[1].number;
+        rv.push("There is overlapping classroom usage between " + c1 + "and" + c2);
     }
 }
 

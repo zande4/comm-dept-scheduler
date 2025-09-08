@@ -26,7 +26,10 @@ const page_total = document.getElementById("page-total");
 const instructor = document.getElementById("instructor");
 const reqs_list = document.getElementById("requirements-list");
 const classroom_select = document.getElementById("classroom-select");
-
+//data
+const classrooms = [{id: "bingham", seats: 12}, {id: "mas105", seats: 18}, 
+{id: "mas109", seats: 16}, {id: "mas110", seats: 16}, {id: "mas112", seats: 55},
+{id: "mas113", seats: 20}, {id: "swain104", seats: 24}, {id: "swain110", seats: 70}];
 class CourseOffering {
     constructor(id, unit, number, instructor, name, description, pathways, enrollment, crosslisted, numTA, day_time, recitation, service_rec, year_res, major_res, classroom_select, classroom){
         this.id = id;
@@ -112,6 +115,10 @@ function onLoadBehavior(){
     timeslots.push(new Timeslot("29", ["tues", "thur"], "12:30", "15:00"));
     timeslots.push(new Timeslot("30", ["tues", "thur"], "14:00", "16:30"));
     timeslots.push(new Timeslot("31", ["tues", "thur"], "15:30", "18:00"));
+    timeslots.push(new Timeslot("32", ["mon-wed"], "14:30", "15:45"));
+    timeslots.push(new Timeslot("33", ["mon-wed"], "15:35", "16:50"));
+    timeslots.push(new Timeslot("34", ["mon-wed"], "16:40", "17:55"));
+    timeslots.push(new Timeslot("35", ["mon-wed"], "17:45", "19:00"));
 
     document.getElementById("preference-2").style.display = "none";
     document.getElementById("preference-3").style.display = "none";
@@ -231,6 +238,7 @@ function generateEventListeners(){
     const submit = document.getElementById("submit");
     const form = document.getElementById("form");
     submit.addEventListener("click", handleSubmit);
+    document.getElementById("submit-data").addEventListener("click", handleSubmit);
 
     form.addEventListener("change", handleCourseSelectToggle);
 
@@ -299,6 +307,9 @@ function renderForm(){
         formData[currentCourse].set("numPreferences", 1);
     }
 
+    preferenceData = [{}];
+    savePreferences();
+
     for (let i = 2; i <= 3; i++){
         if (i <= formData[currentCourse].get("numPreferences")){
             document.getElementById(`preference-${i}`).style.removeProperty("display");
@@ -328,6 +339,7 @@ function renderForm(){
     }
     page_number.innerText = currentCourse + 1;
     page_total.innerText = "/" + formData.length;
+    console.log(preferenceData);
 }
 
 function handleCourseSearchClick(event){
@@ -581,26 +593,32 @@ function getReqsListFromCourseNum(number){
     }
     let reqs = [];
     const course_object = courseNumberToObject(number);
-    if (course_object.cel){
+    if(course_object.cel){
         reqs.push("Communication and Everyday Life");
     }
-    if (course_object.mapc){
+    if(course_object.mapc){
         reqs.push("Media Arts, Performance, and Critical Practice");
     }
-    if (course_object.mtpc){
+    if(course_object.mtpc){
         reqs.push("Media Technologies and Public Culture");
     }
-    if (course_object.ocw){
+    if(course_object.ocw){
         reqs.push("Organization, Communication, and Work");
     }
-    if (course_object.raa){
+    if(course_object.raa){
         reqs.push("Rhetoric, Activism, and Advocacy");
     }
-    if (course_object.m){
+    if(course_object.m){
         reqs.push("Modes of Inquiry");
     }
-    if (course_object.r){
+    if(course_object.r){
         reqs.push("Representation Identity and Difference");
+    }
+    if(course_object.ideas.includes("FY-SEMINAR")){
+        reqs.push("First-year Seminar");
+    }
+    if(course_object.ideas.includes("COMMBEYOND")){
+        reqs.push("Communication Beyond Carolina");
     }
     return reqs;
 }
@@ -618,25 +636,28 @@ function handleSubmit(event){
     //get all field values and create CourseOffering object
     event.preventDefault();
     validateManualTime();
-    if (form.reportValidity()){
-        const pref = formData[currentCourse].get("numPreferences");
-        formData[currentCourse] = (new FormData(form));
-        formData[currentCourse].set("numPreferences", pref);
-        if (sessionStorage.getItem("coursesToEdit") === null){
-            for (let i = 0; i < formData.length; i++){
-                courseOfferings.push(createCourseOffering(i));
+    //form.reportValidity();
+    console.log(event.target.id);
+    if (form.reportValidity() || event.target.id === "submit-data"){
+        if (event.target.id === "submit"){
+            const pref = formData[currentCourse].get("numPreferences");
+            formData[currentCourse] = (new FormData(form));
+            formData[currentCourse].set("numPreferences", pref);
+            if (sessionStorage.getItem("coursesToEdit") === null){
+                for (let i = 0; i < formData.length; i++){
+                    courseOfferings.push(createCourseOffering(i));
+                }
+            }
+            else{
+                courseOfferings[courseOfferings.findIndex(c => c.id === JSON.parse(sessionStorage.getItem("coursesToEdit")).id)] = createCourseOffering(currentCourse);
             }
         }
-        else{
-            courseOfferings[courseOfferings.findIndex(c => c.id === JSON.parse(sessionStorage.getItem("coursesToEdit")).id)] = createCourseOffering(currentCourse);
-        }
-        
+
         //Save to sessionStorage
         sessionStorage.setItem('courses', JSON.stringify(courseOfferings));
         sessionStorage.removeItem('coursesToEdit');
         location.href = './summary.html';
     }
-    
 }
 
 function handleOtherTimeToggle(event){
@@ -664,6 +685,7 @@ function handleAddPreference(event){
     preferenceData.push({});
     formData[currentCourse].set("numPreferences", Number(formData[currentCourse].get("numPreferences")) + 1);
     renderPreferenceHTML();
+    console.log(preferenceData);
 }
 
 function handleRemovePreference(event){
@@ -674,6 +696,7 @@ function handleRemovePreference(event){
     preferenceData.splice(index, 1);
     formData[currentCourse].set("numPreferences", Number(formData[currentCourse].get("numPreferences")) - 1);
     renderPreferenceHTML();
+    console.log(preferenceData);
 }
 
 function savePreferences(){
@@ -772,4 +795,13 @@ function validateManualTime(){
 function parseTimeToMinutes(timeStr) {
     const [hours, minutes] = timeStr.split(":").map(Number);
     return hours * 60 + minutes;
+}
+
+function checkSufficientClassroomSeats(){
+    //set validity message if a classroom with insufficient seats is selected
+    seats_needed = document.getElementById("enrollment").value;
+    seats = classrooms.get(document.getElementById("classroom-select").value).seats;
+    if (seats < seats_needed){
+        
+    }
 }

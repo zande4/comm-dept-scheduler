@@ -15,11 +15,19 @@
 <body class="dark-bg">
     <h1>COMM Department Course Offering Scheduler</h1>
     <h2>Submit Your Course Offerings</h2>
-    <input type="file" id="import" accept="application/json" multiple><br>
-    <span>*If you have previously saved data please upload here</span><br>
-
-    <div>
-        <label for="unit-name">Select your unit</label>
+    <div class="light-bg">
+        <h3>Import Previous Data</h3>
+        <p>
+            If you have previously saved data please upload it here. 
+            You can submit your data now or continue manually entering courses.
+        </p>
+        <input type="file" id="import" accept="application/json" multiple>
+        <small class="grayed-out-text">look for filename like course-offering-export.json</small>
+        <button class="float-right-container" id="submit-data">Submit Imported Data</button>
+    </div>
+    
+    <div class="centered-div medium-bg">
+        <h3>Select your unit</h3>
         <select name="unit-name" id="unit-name">
             <option value="Rhetoric">Rhetoric</option>
             <option value="Interpersonal and Organizational Communication">Interpersonal and Organizational Communication</option>
@@ -33,7 +41,7 @@
         <h3>Course Info</h3>
         <div>
             <div class="form-section">
-                 <input type="radio" name="course-select" id="number-select" value="number">
+                <input type="radio" name="course-select" id="number-select" value="number">
                 <label for="number-select">Enter course number</label>
                 <input type="radio" name="course-select" id="special-topic" value="special">
                 <label for="special-topic">Enter special topics course</label>
@@ -159,11 +167,12 @@
 
             <div>
                 <label for="instructor">Instructor:</label>
-                <input type="text" id="instructor" name="instructor">
+                <input type="text" id="instructor" name="instructor" required>
+                <small class="grayed-out-text">Enter TBD if necessary</small>
             </div>
             <div>
                 <label for="enrollment">Max enrollment:</label>
-                <input type="number" id="enrollment" name="enrollment">
+                <input type="number" id="enrollment" name="enrollment" required>
             </div>
             <div>
                 <label for="crosslisted">Crosslisted department: </label>
