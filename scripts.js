@@ -449,7 +449,7 @@ function createCourseOffering(index){
         }
     }
 
-    return new CourseOffering(cid, unit, entry.get("number"), entry.get("instructor"), entry.get("title"), entry.get("description"), pathways, entry.get("enrollment"), entry.get("crosslisted"),
+    return new CourseOffering(cid, unit_select.value, entry.get("number"), entry.get("instructor"), entry.get("title"), entry.get("description"), pathways, entry.get("enrollment"), entry.get("crosslisted"),
      entry.get("numTA"), time, entry.get("recitation"), entry.get("service-rec"), entry.get("year-res"), entry.get("major-res"), classroom_select, entry.get("classroom"));
 }
 
@@ -804,4 +804,5 @@ function checkSufficientClassroomSeats(){
     if (seats < seats_needed){
         
     }
+
 }
