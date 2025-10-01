@@ -5,7 +5,7 @@ export let courseArray = [];
 
 export function parseCSV() {
     return new Promise((resolve, reject) => {
-        papaparse.parse("Scripts/courses.csv", {
+        papaparse.parse("./Scripts/courses.csv", {
         download: true,
         header: true,
         dynamicTyping: true,
