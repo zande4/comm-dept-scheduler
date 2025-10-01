@@ -8,14 +8,13 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.0/papaparse.min.js"></script>
-    <script src="courses.js" defer></script>
-    <script src="scripts.js" defer></script>
+    <script type="module" src="./Scripts/Pages/index.js" defer></script>
     <title>COMM Department Scheduler</title>
 </head>
 <body class="dark-bg">
     <h1>COMM Department Course Offering Scheduler</h1>
     <h2>Submit Your Course Offerings</h2>
-    <div class="light-bg">
+    <div class="light-bg" id="import-container">
         <h3>Import Previous Data</h3>
         <p>
             If you have previously saved data please upload it here. 
@@ -215,7 +214,7 @@
                     <div id="other-time-days-1">
                         <input type="checkbox" id="other-mon-1" name="other-mon-1">
                         <label for="other-mon-1">Monday</label>
-                        <input type="checkbox" id="other-tue-1" name="other-tue-1">
+                        <input type="checkbox" id="other-tues-1" name="other-tues-1">
                         <label for="other-tues-1">Tuesday</label>
                         <input type="checkbox" id="other-wed-1" name="other-wed-1">
                         <label for="other-wed-1">Wednesday</label>
@@ -255,7 +254,7 @@
                     <div id="other-time-days-2">
                         <input type="checkbox" id="other-mon-2" name="other-mon-2">
                         <label for="other-mon-2">Monday</label>
-                        <input type="checkbox" id="other-tue-2" name="other-tue-2">
+                        <input type="checkbox" id="other-tues-2" name="other-tues-2">
                         <label for="other-tues-2">Tuesday</label>
                         <input type="checkbox" id="other-wed-2" name="other-wed-2">
                         <label for="other-wed-2">Wednesday</label>
@@ -295,7 +294,7 @@
                     <div id="other-time-days-3">
                         <input type="checkbox" id="other-mon-3" name="other-mon-3">
                         <label for="other-mon-3">Monday</label>
-                        <input type="checkbox" id="other-tue-3" name="other-tue-3">
+                        <input type="checkbox" id="other-tues-3" name="other-tues-3">
                         <label for="other-tues-3">Tuesday</label>
                         <input type="checkbox" id="other-wed-3" name="other-wed-3">
                         <label for="other-wed-3">Wednesday</label>
@@ -332,6 +331,10 @@
 
         <h3>Classroom Requirements</h3>
         <div>
+            <label for="active-classroom">Would you like an active learning classroom for this class?</label>
+            <input type="checkbox" name="active-classroom" id="active-classroom">
+        </div>
+        <div>
             <label for="classroom-needed">Do you have a specific classroom requirement? (Bingham hall, Swain hall, or MAS)</label>
             <input type="checkbox" name="classroom-needed" id="classroom-needed">
         </div>
@@ -362,5 +365,10 @@
             <input id= "submit" type="submit" value="Submit">
         </div>
     </form>
+    <!--<aside>
+        <h2><span id="summary-unit"></span> Unit Summary</h2>
+        <ul id="summary-req-list">
+        </ul>
+    </aside>-->
 </body>
 </html>

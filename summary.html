@@ -10,9 +10,7 @@
     <link rel="stylesheet" type="text/css" href="style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@event-calendar/build@4.3.0/dist/event-calendar.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/@event-calendar/build@3.12.0/event-calendar.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.0/papaparse.min.js"></script>
-    <script src="courses.js" defer></script>
-    <script src="summaryScripts.js" defer></script>
+    <script type="module" src="./Scripts/Pages/summary.js" defer></script>
 </head>
 <body>
     <h1>COMM Department Course Offering Scheduler</h1>
@@ -21,7 +19,8 @@
         Click 'Download summary' to download a PDF copy of your submission.<br>
         Click 'Export course data' to share your course data with others.
     </p>
-    <button title="Download a PDF version" id="summary">Download summary</button>
+    <button title="Download a PDF version" id="summary">Download PDF summary</button>
+    <button title="Download a CSV version" id="csv">Download as spreadsheet</button>
     <button title="Export a JSON file to share your course data" id="export">Export course data</button>
     <section id="checklists">
         
@@ -43,6 +42,7 @@
             <div id="courses">
 
             </div>
+            <Button id="add-courses" class="big-button">Add Courses</Button>
         </details>
     </section>
     <section>

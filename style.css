@@ -139,12 +139,24 @@ textarea{
     background-color:#c7e6fb;
 }
 
+.selected-light{
+    background-color: #FFFFFF;
+}
+
 .satisfied{
     background-color: #61d979;
 }
 
 .tbd {
     background-color: orange;
+}
+
+.big-button {
+    width: 100px;
+    height: 40px;
+    background-color: #8ef8a3;
+    font-size: 0.9rem;  
+    cursor: pointer; 
 }
 
 .course-row{
