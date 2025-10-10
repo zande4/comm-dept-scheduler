@@ -34,7 +34,7 @@ export function parseCSV() {
             },
             error: function(error) {
                 console.error("Parsing Error:", error);
-                reject(err);
+                reject(error);
             }
         });
     });
